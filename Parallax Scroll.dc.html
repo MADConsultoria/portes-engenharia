@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #ffffff; }
+  body { overscroll-behavior-y: none; }
+  a { color: #4a6b80; }
+  a:hover { color: #26414f; }
+</style>
+</helmet>
+<div style="{{ pageStyle }}">
+  <div style="position:sticky; top:0; left:0; width:100%; height:100vh; overflow:hidden; background:#ffffff;">
+    <div style="{{ camStyle }}">
+
+      <div style="{{ planWrap }}"><img src="seq/f6.png" alt="" draggable="false" style="width:100%; height:100%; object-fit:cover; display:block;" /></div>
+      <div style="{{ wireWrap }}"><img src="seq/f7.png" alt="" draggable="false" style="width:100%; height:100%; object-fit:cover; display:block;" /></div>
+      <div style="{{ wire2Wrap }}"><img src="seq/f8.png" alt="" draggable="false" style="width:100%; height:100%; object-fit:cover; display:block;" /></div>
+      <div style="{{ halfWrap }}"><img src="seq/f9.png" alt="" draggable="false" style="width:100%; height:100%; object-fit:cover; display:block;" /></div>
+      <div style="{{ renderWrap }}"><img src="seq/f10.png" alt="" draggable="false" style="width:100%; height:100%; object-fit:cover; display:block;" /></div>
+
+      <div style="{{ ctxReveal }}">
+        <div style="{{ ctxPlate }}"><img src="seq/f11.png" alt="" draggable="false" style="width:100%; height:100%; object-fit:cover; display:block;" /></div>
+      </div>
+
+    </div>
+
+    <div style="{{ drawLineStyle }}"></div>
+    <div style="{{ riseEdgeStyle }}"></div>
+
+    <div style="{{ hudStyle }}">
+      <div style="display:flex; align-items:baseline; gap:14px;">
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:13px; letter-spacing:0.14em; color:#1c1c1a;">{{ pct }}</span>
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:13px; letter-spacing:0.14em; color:#8d8d86;">{{ phase }}</span>
+      </div>
+      <div style="{{ barStyle }}"><div style="{{ barFillStyle }}"></div></div>
+    </div>
+
+    <div style="{{ hintStyle }}">
+      <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.2em; color:#8d8d86;">ROLE PARA CONSTRUIR</span>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900},&quot;scrollLength&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:560,&quot;min&quot;:300,&quot;max&quot;:900,&quot;step&quot;:20,&quot;unit&quot;:&quot;vh&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Scroll&quot;},&quot;bandCount&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:18,&quot;min&quot;:6,&quot;max&quot;:40,&quot;step&quot;:1,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Traço&quot;},&quot;depth&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1,&quot;min&quot;:0,&quot;max&quot;:2.5,&quot;step&quot;:0.1,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Parallax&quot;},&quot;pointerParallax&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Parallax&quot;},&quot;hud&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Interface&quot;}}">
+class Component extends DCLogic {
+  state = { p: 0, mx: 0, my: 0 };
+
+  componentDidMount() {
+    this.onScroll = () => {
+      if (this.locked) return;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const p = max > 0 ? window.scrollY / max : 0;
+      if (Math.abs(p - this.state.p) > 0.0002) this.setState({ p });
+    };
+    this.onMove = (e) => {
+      if (this.props.pointerParallax === false) return;
+      this.setState({
+        mx: (e.clientX / window.innerWidth - 0.5) * 2,
+        my: (e.clientY / window.innerHeight - 0.5) * 2,
+      });
+    };
+    window.__setP = (v) => { this.locked = true; this.setState({ p: v }); };
+    window.addEventListener('scroll', this.onScroll, { passive: true });
+    window.addEventListener('resize', this.onScroll);
+    window.addEventListener('mousemove', this.onMove, { passive: true });
+    this.onScroll();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.onScroll);
+    window.removeEventListener('resize', this.onScroll);
+    window.removeEventListener('mousemove', this.onMove);
+  }
+
+  renderVals() {
+    const p = this.state.p;
+    const depth = this.props.depth ?? 1;
+    const pointer = this.props.pointerParallax !== false;
+    const hud = this.props.hud !== false;
+    const len = this.props.scrollLength ?? 560;
+    const bands = Math.round(this.props.bandCount ?? 18);
+
+    const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+    const ease = (t) => 1 - Math.pow(1 - t, 3);
+    const lin = (a, b) => clamp(b === a ? 1 : (p - a) / (b - a), 0, 1);
+    const ramp = (a, b) => ease(lin(a, b));
+    const lerp = (a, b, t) => a + (b - a) * t;
+
+    const mx = pointer ? this.state.mx * 20 : 0;
+    const my = pointer ? this.state.my * 11 : 0;
+
+    /* --- 1. traço por faixas: cada faixa preenche da esquerda para a direita,
+           escalonada de cima para baixo. Nada de opacidade. --- */
+    const stripeMask = (prog, n, axis, stagger) => {
+      const imgs = [];
+      const sizes = [];
+      const poss = [];
+      for (let i = 0; i < n; i++) {
+        const off = (i / Math.max(1, n - 1)) * stagger;
+        const f = clamp((prog * (1 + stagger) - off) / (1 - stagger * 0.15), 0, 1);
+        const pc = (f * 100).toFixed(2);
+        if (axis === 'rows') {
+          imgs.push(
+            'linear-gradient(90deg, #000 0 ' + pc + '%, rgba(0,0,0,0.35) ' + Math.min(100, f * 100 + 1.2).toFixed(2) + '%, rgba(0,0,0,0) ' + Math.min(100, f * 100 + 2.4).toFixed(2) + '%)'
+          );
+          sizes.push('100% ' + (100 / n + 0.4).toFixed(3) + '%');
+          poss.push('0% ' + ((i / Math.max(1, n - 1)) * 100).toFixed(3) + '%');
+        } else {
+          imgs.push(
+            'linear-gradient(0deg, #000 0 ' + pc + '%, rgba(0,0,0,0.35) ' + Math.min(100, f * 100 + 1.5).toFixed(2) + '%, rgba(0,0,0,0) ' + Math.min(100, f * 100 + 3).toFixed(2) + '%)'
+          );
+          sizes.push((100 / n + 0.4).toFixed(3) + '% 100%');
+          poss.push(((i / Math.max(1, n - 1)) * 100).toFixed(3) + '% 0%');
+        }
+      }
+      const m = {
+        maskImage: imgs.join(','),
+        WebkitMaskImage: imgs.join(','),
+        maskSize: sizes.join(','),
+        WebkitMaskSize: sizes.join(','),
+        maskPosition: poss.join(','),
+        WebkitMaskPosition: poss.join(','),
+        maskRepeat: imgs.map(() => 'no-repeat').join(','),
+        WebkitMaskRepeat: imgs.map(() => 'no-repeat').join(','),
+      };
+      return m;
+    };
+
+    const radialMask = (prog, cx, cy) => {
+      if (prog <= 0.004) return { display: 'none' };
+      const r = lerp(-6, 168, prog);
+      const g = 'radial-gradient(circle at ' + cx + ' ' + cy + ', #000 0 ' + r.toFixed(1) + '%, rgba(0,0,0,0) ' + (r + 14).toFixed(1) + '%)';
+      return { maskImage: g, WebkitMaskImage: g, maskSize: '100% 100%', WebkitMaskSize: '100% 100%', maskRepeat: 'no-repeat', WebkitMaskRepeat: 'no-repeat' };
+    };
+
+    /* deslocamento comum: mantém todas as etapas registradas entre si */
+    const baseX = -p * 22 * depth + mx;
+    const baseY = -p * 40 * depth + my;
+    const plate = (extra) =>
+      Object.assign(
+        {
+          position: 'absolute',
+          inset: 0,
+          transform: 'translate3d(' + baseX.toFixed(2) + 'px,' + baseY.toFixed(2) + 'px,0)',
+          willChange: 'transform, mask-position',
+        },
+        extra
+      );
+
+    const planP = 0.32 + 0.68 * lin(0.0, 0.13);
+    const wireP = lin(0.14, 0.38);
+    const wire2P = lin(0.38, 0.47);
+    const halfP = lin(0.47, 0.68);
+    const renderP = ramp(0.64, 0.82);
+    const ctxP = ramp(0.79, 0.99);
+
+    /* faixa de luz acompanhando o traço / a subida dos materiais */
+    const drawRow = 1 - lin(0.13, 0.36);
+    const riseCol = lin(0.46, 0.68);
+
+    const phases = [
+      [0.0, 'IMPLANTACAO'],
+      [0.13, 'ESTRUTURA'],
+      [0.36, 'DETALHAMENTO'],
+      [0.46, 'MATERIAIS'],
+      [0.64, 'ACABAMENTO'],
+      [0.79, 'ENTORNO'],
+    ];
+    let phase = phases[0][1];
+    for (const [at, name] of phases) if (p >= at) phase = name;
+
+    /* profundidade real no quadro final: céu mais lento, rua mais rápida */
+    const bandLayer = (maskGrad, rate) => {
+      const ex = (rate - 1) * (mx * 2.2 - p * 30 * depth);
+      const ey = (rate - 1) * (my * 2.2 - p * 20 * depth);
+      return Object.assign(
+        {
+          position: 'absolute',
+          inset: 0,
+          transform:
+            'translate3d(' + (baseX + ex).toFixed(2) + 'px,' + (baseY + ey).toFixed(2) + 'px,0) scale(1.06)',
+          transformOrigin: '50% 55%',
+          willChange: 'transform',
+        },
+        {
+          maskImage: maskGrad,
+          WebkitMaskImage: maskGrad,
+          maskSize: '100% 100%',
+          WebkitMaskSize: '100% 100%',
+          maskRepeat: 'no-repeat',
+          WebkitMaskRepeat: 'no-repeat',
+        }
+      );
+    };
+
+    return {
+      pct: String(Math.round(p * 100)).padStart(3, '0') + '%',
+      phase,
+      pageStyle: { position: 'relative', height: len + 'vh', background: '#ffffff' },
+      camStyle: {
+        position: 'absolute',
+        inset: 0,
+        transform: 'scale(' + (1.11 - p * 0.04).toFixed(4) + ')',
+        transformOrigin: '50% 58%',
+      },
+
+      planWrap: plate(stripeMask(planP, 10, 'rows', 0.55)),
+      wireWrap: plate(stripeMask(wireP, bands, 'rows', 0.75)),
+      wire2Wrap: plate(stripeMask(wire2P, 8, 'cols', 0.5)),
+      halfWrap: plate(stripeMask(halfP, 12, 'cols', 0.7)),
+      renderWrap: plate(radialMask(renderP, '46%', '52%')),
+
+      ctxReveal: Object.assign(
+        { position: 'absolute', inset: 0 },
+        radialMask(ctxP, '46%', '50%')
+      ),
+      ctxPlate: {
+        position: 'absolute',
+        inset: 0,
+        transform:
+          'translate3d(' + (baseX * 1.4).toFixed(2) + 'px,' + (baseY * 1.4).toFixed(2) + 'px,0) scale(1.05)',
+        transformOrigin: '50% 55%',
+        willChange: 'transform',
+      },
+
+      drawLineStyle: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        height: '1px',
+        top: (drawRow * 100).toFixed(2) + '%',
+        opacity: (lin(0.13, 0.16) * (1 - lin(0.31, 0.36))).toFixed(3),
+        background:
+          'linear-gradient(90deg, rgba(120,150,175,0) 0%, rgba(120,150,175,0.55) 25%, rgba(120,150,175,0.55) 75%, rgba(120,150,175,0) 100%)',
+        pointerEvents: 'none',
+      },
+      riseEdgeStyle: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        height: '1px',
+        bottom: (riseCol * 100).toFixed(2) + '%',
+        opacity: (lin(0.46, 0.5) * (1 - lin(0.63, 0.68))).toFixed(3),
+        background:
+          'linear-gradient(90deg, rgba(150,150,145,0) 0%, rgba(150,150,145,0.45) 25%, rgba(150,150,145,0.45) 75%, rgba(150,150,145,0) 100%)',
+        pointerEvents: 'none',
+      },
+
+      hudStyle: {
+        position: 'absolute',
+        left: '40px',
+        bottom: '40px',
+        display: hud ? 'flex' : 'none',
+        flexDirection: 'column',
+        gap: '10px',
+        pointerEvents: 'none',
+      },
+      barStyle: { width: '180px', height: '1px', background: 'rgba(28,28,26,0.15)' },
+      barFillStyle: { width: (p * 100).toFixed(2) + '%', height: '1px', background: '#1c1c1a' },
+      hintStyle: {
+        position: 'absolute',
+        right: '40px',
+        bottom: '42px',
+        opacity: (1 - lin(0.02, 0.1)).toFixed(3),
+        display: hud ? 'block' : 'none',
+        pointerEvents: 'none',
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

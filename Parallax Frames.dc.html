@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #ffffff; }
+  body { overscroll-behavior-y: none; }
+  a { color: #4a6b80; }
+  a:hover { color: #26414f; }
+</style>
+</helmet>
+<div style="{{ pageStyle }}">
+  <div style="position:sticky; top:0; left:0; width:100%; height:100vh; overflow:hidden; background:#ffffff;">
+    <canvas ref="{{ canvasRef }}" width="1280" height="720" style="{{ canvasStyle }}"></canvas>
+
+    <div style="{{ hudStyle }}">
+      <div style="display:flex; align-items:baseline; gap:16px;">
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:13px; letter-spacing:0.14em; color:#1c1c1a;">{{ counter }}</span>
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:13px; letter-spacing:0.14em; color:#8d8d86;">{{ phase }}</span>
+      </div>
+      <div style="{{ barStyle }}"><div style="{{ barFillStyle }}"></div></div>
+    </div>
+
+    <div style="{{ ticksStyle }}">
+      <sc-for list="{{ ticks }}" as="tick" hint-placeholder-count="6">
+        <div style="{{ tick.style }}"></div>
+      </sc-for>
+    </div>
+
+    <div style="{{ hintStyle }}">
+      <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.2em; color:#8d8d86;">ROLE PARA CONSTRUIR</span>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900},&quot;scrollLength&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:620,&quot;min&quot;:300,&quot;max&quot;:1200,&quot;step&quot;:20,&quot;unit&quot;:&quot;vh&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Scroll&quot;},&quot;depth&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1,&quot;min&quot;:0,&quot;max&quot;:2.5,&quot;step&quot;:0.1,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Parallax&quot;},&quot;pointerParallax&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Parallax&quot;},&quot;hud&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Interface&quot;}}">
+const N_FRAMES = 60;
+
+class Component extends DCLogic {
+  state = { p: 0, loaded: 0 };
+  frames = [];
+  canvas = null;
+  mx = 0;
+  my = 0;
+
+  componentDidMount() {
+    for (let i = 0; i < N_FRAMES; i++) {
+      const im = new Image();
+      im.decoding = 'async';
+      im.src = 'seq/build/' + String(i).padStart(2, '0') + '.jpg';
+      im.onload = () => {
+        this.frames[i] = im;
+        this.setState((s) => ({ loaded: s.loaded + 1 }));
+      };
+      this.frames[i] = null;
+      this.imgs = this.imgs || [];
+      this.imgs.push(im);
+    }
+
+    this.onScroll = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const p = max > 0 ? window.scrollY / max : 0;
+      if (Math.abs(p - this.state.p) > 0.0004) this.setState({ p });
+    };
+    this.onMove = (e) => {
+      if (this.props.pointerParallax === false) return;
+      this.mx = (e.clientX / window.innerWidth - 0.5) * 2;
+      this.my = (e.clientY / window.innerHeight - 0.5) * 2;
+      this.applyTransform();
+    };
+    window.addEventListener('scroll', this.onScroll, { passive: true });
+    window.addEventListener('resize', this.onScroll);
+    window.addEventListener('mousemove', this.onMove, { passive: true });
+    this.mx = 0;
+    this.my = 0;
+    this.onScroll();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.onScroll);
+    window.removeEventListener('resize', this.onScroll);
+    window.removeEventListener('mousemove', this.onMove);
+  }
+
+  componentDidUpdate() {
+    this.draw();
+    this.applyTransform();
+  }
+
+  nearest(i) {
+    if (this.frames[i]) return this.frames[i];
+    for (let d = 1; d < N_FRAMES; d++) {
+      if (this.frames[i - d]) return this.frames[i - d];
+      if (this.frames[i + d]) return this.frames[i + d];
+    }
+    return null;
+  }
+
+  draw() {
+    const c = this.canvas;
+    if (!c) return;
+    const ctx = c.getContext('2d');
+    const p = Math.min(1, Math.max(0, this.state.p));
+    const f = p * (N_FRAMES - 1);
+    const i0 = Math.floor(f);
+    const t = f - i0;
+    const a = this.nearest(i0);
+    const b = this.nearest(Math.min(N_FRAMES - 1, i0 + 1));
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, c.width, c.height);
+    if (a) ctx.drawImage(a, 0, 0, c.width, c.height);
+    if (b && b !== a && t > 0.001) {
+      ctx.globalAlpha = t;
+      ctx.drawImage(b, 0, 0, c.width, c.height);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  applyTransform() {
+    const c = this.canvas;
+    if (!c) return;
+    const p = this.state.p;
+    const depth = this.props.depth ?? 1;
+    const pointer = this.props.pointerParallax !== false;
+    const mx = pointer ? this.mx * 22 * depth : 0;
+    const my = pointer ? this.my * 12 * depth : 0;
+    const x = -p * 26 * depth + mx;
+    const y = -p * 44 * depth + my;
+    const sc = 1.1 - p * 0.05;
+    c.style.transform =
+      'translate3d(' + x.toFixed(2) + 'px,' + y.toFixed(2) + 'px,0) scale(' + sc.toFixed(4) + ')';
+  }
+
+  renderVals() {
+    const p = Math.min(1, Math.max(0, this.state.p));
+    const hud = this.props.hud !== false;
+    const len = this.props.scrollLength ?? 900;
+    const idx = Math.min(N_FRAMES, Math.floor(p * (N_FRAMES - 1)) + 1);
+
+    const phases = [
+      [0, 'TRACADO DA PLANTA'],
+      [10, 'PAREDES E PILARES'],
+      [13, 'LAJES E VIGAS'],
+      [16, 'CAIXILHOS'],
+      [19, 'PORTAS E DETALHES'],
+      [23, 'ALVENARIA SUBINDO'],
+      [31, 'ABERTURAS GANHANDO COR'],
+      [40, 'LUZES ACENDENDO'],
+      [43, 'PAVIMENTACAO DA RUA'],
+      [47, 'JARDIM E GRAMA'],
+      [50, 'CEU'],
+      [53, 'ARVORES CRESCENDO'],
+    ];
+    let phase = phases[0][1];
+    for (const [at, name] of phases) if (idx - 1 >= at) phase = name;
+
+    const ticks = [];
+    for (let i = 0; i < N_FRAMES; i++) {
+      const on = i <= idx - 1;
+      ticks.push({
+        style: {
+          width: '1px',
+          height: i % 10 === 0 ? '9px' : '5px',
+          background: on ? '#1c1c1a' : 'rgba(28,28,26,0.18)',
+        },
+      });
+    }
+
+    return {
+      canvasRef: (el) => {
+        if (el && el !== this.canvas) {
+          this.canvas = el;
+          this.draw();
+          this.applyTransform();
+        }
+      },
+      canvasStyle: {
+        position: 'absolute',
+        inset: 0,
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+        display: 'block',
+        transformOrigin: '50% 56%',
+        willChange: 'transform',
+      },
+      counter: 'FRAME ' + String(idx).padStart(2, '0') + '/' + N_FRAMES,
+      phase,
+      pageStyle: { position: 'relative', height: len + 'vh', background: '#ffffff' },
+      hudStyle: {
+        position: 'absolute',
+        left: '40px',
+        bottom: '40px',
+        display: hud ? 'flex' : 'none',
+        flexDirection: 'column',
+        gap: '12px',
+        pointerEvents: 'none',
+      },
+      barStyle: { width: '220px', height: '1px', background: 'rgba(28,28,26,0.15)' },
+      barFillStyle: { width: (p * 100).toFixed(2) + '%', height: '1px', background: '#1c1c1a' },
+      ticksStyle: {
+        position: 'absolute',
+        left: '40px',
+        bottom: '86px',
+        display: hud ? 'flex' : 'none',
+        alignItems: 'flex-end',
+        gap: '3px',
+        height: '9px',
+        pointerEvents: 'none',
+      },
+      ticks,
+      hintStyle: {
+        position: 'absolute',
+        right: '40px',
+        bottom: '42px',
+        opacity: (1 - Math.min(1, p / 0.08)).toFixed(3),
+        display: hud ? 'block' : 'none',
+        pointerEvents: 'none',
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

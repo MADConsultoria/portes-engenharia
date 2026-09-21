@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  html, body { margin: 0; padding: 0; background: #ffffff; }
+  a { color: #4a6b80; }
+  a:hover { color: #26414f; }
+</style>
+<script>window.OM_SCENES = '[{"name":"Terreno","dur":3.2,"desc":"A planta implantada no terreno aparece e a camera avanca sobre ela"},{"name":"Estrutura","dur":4,"desc":"O volume da casa e desenhado de baixo para cima em wireframe"},{"name":"Detalhe","dur":2.8,"desc":"A camera empurra sobre o wireframe, revelando o detalhamento"},{"name":"Materiais","dur":4.2,"desc":"Os materiais entram da direita para a esquerda sobre o wireframe"},{"name":"Render","dur":3.6,"desc":"A casa renderizada completa, iluminada, com deriva lenta"},{"name":"Contexto","dur":5,"desc":"A camera recua e o entorno, ceu e vegetacao aparecem"},{"name":"Retorno","dur":2.2,"desc":"A cena dissolve no branco para reiniciar o loop"}]';</script>
+<script>window.OM_PLAYBACK = '{"mode":"loop"}';</script>
+<script>window.TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "pointerParallax": true,
+  "parallaxStrength": 1,
+  "vignette": true,
+  "motionEditor": true
+}/*EDITMODE-END*/;</script>
+</helmet>
+<x-import component-from-global-scope="ParallaxApp" from="./animations-v3.jsx ./tweaks-panel.jsx ./parallax-scene.jsx" hint-size="100%,100%"></x-import>
+</x-dc>
+</body>
+</html>

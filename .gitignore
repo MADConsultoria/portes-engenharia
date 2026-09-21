@@ -1,0 +1,28 @@
+node_modules/
+_optimize-images.js
+package.json
+package-lock.json
+
+# Rascunhos e anexos não usados pelo site publicado
+uploads/
+
+# Assets de marca não referenciados pelas páginas
+brand/img0.png
+brand/img1.png
+brand/img2.png
+brand/img3.png
+brand/img4.png
+brand/img5.png
+brand/img6.png
+brand/img7.png
+brand/logo-portes-alt.png
+brand/pre-miv-portes.pdf
+
+# Ferramentas de desenvolvimento do editor (não carregadas pelo site)
+*.jsx
+gen-build.js
+gen-frames.js
+web/
+
+# Frames de origem não usados (site usa apenas seq/build)
+seq/f*.png
