@@ -20,7 +20,7 @@ const QUESTIONS = [
   'Em quanto tempo você pretende iniciar a operação?',
   'Qual é o seu perfil profissional?',
   'Qual foi a sua movimentação financeira recorrente nos últimos meses?',
-  'Qual é a sua renda mensal declarada?',
+  'Em relação a pergunta anterior qual é a sua renda mensal declarada?',
   'Quais são suas outras fontes de renda recorrente?',
   'Qual é a sua idade?',
   'Pretende estruturar a operação junto com outra pessoa?',
