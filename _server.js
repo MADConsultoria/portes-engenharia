@@ -32,6 +32,7 @@ const root = path.resolve(__dirname);
 const basePath = '/viabilidade-estrategica';
 const port = Number(process.env.PORT || 8000);
 const rateLimit = new Map();
+let resolvedClickUpListId = '';
 
 function sendJson(res, status, body) {
   res.writeHead(status, {
@@ -128,12 +129,47 @@ function classifyClickUpError(detail) {
   return '';
 }
 
+async function resolveClickUpListId(configuredId, token, apiBase) {
+  if (/^\d+$/.test(configuredId)) return configuredId;
+  if (resolvedClickUpListId) return resolvedClickUpListId;
+
+  const response = await fetch(`${apiBase}/view/${encodeURIComponent(configuredId)}`, {
+    headers: { Authorization: token },
+    signal: AbortSignal.timeout(12000),
+  });
+
+  if (!response.ok) {
+    const detail = (await response.text()).slice(0, 500);
+    console.error(`ClickUp view resolution error ${response.status}: ${detail}`);
+    const error = new Error('CLICKUP_REQUEST_FAILED');
+    error.diagnostic = `CLICKUP_VIEW_${response.status}`;
+    const category = classifyClickUpError(detail);
+    if (category) error.diagnostic += `_${category}`;
+    throw error;
+  }
+
+  const view = await response.json();
+  const parentId = String(view.parent && view.parent.id || '');
+  const parentType = Number(view.parent && view.parent.type);
+  if (parentType !== 6 || !/^\d+$/.test(parentId)) {
+    console.error(`ClickUp view parent is not a List (type: ${parentType || 'unknown'}).`);
+    const error = new Error('CLICKUP_REQUEST_FAILED');
+    error.diagnostic = 'CLICKUP_VIEW_NOT_ATTACHED_TO_LIST';
+    throw error;
+  }
+
+  resolvedClickUpListId = parentId;
+  console.log(`Resolved ClickUp view ${configuredId} to List ${parentId}.`);
+  return parentId;
+}
+
 async function createClickUpTask(lead, req) {
   const token = String(process.env.CLICKUP_API_TOKEN || '').trim();
-  const listId = String(process.env.CLICKUP_LIST_ID || '').trim();
+  const configuredListId = String(process.env.CLICKUP_LIST_ID || '').trim();
   const apiBase = process.env.CLICKUP_API_BASE_URL || 'https://api.clickup.com/api/v2';
 
-  if (!token || !listId) throw new Error('CLICKUP_NOT_CONFIGURED');
+  if (!token || !configuredListId) throw new Error('CLICKUP_NOT_CONFIGURED');
+  const listId = await resolveClickUpListId(configuredListId, token, apiBase);
 
   const response = await fetch(`${apiBase}/list/${encodeURIComponent(listId)}/task`, {
     method: 'POST',
