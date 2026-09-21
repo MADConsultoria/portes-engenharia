@@ -70,7 +70,7 @@
         </div>
 
         <div class="form-content" style="padding:46px 32px 42px;">
-          <sc-if value="{{ isQuestion }}" hint-placeholder-val="{{ true }}">
+          <sc-if value="{{ isSingle }}" hint-placeholder-val="{{ true }}">
             <div style="display:flex; flex-direction:column; gap:30px;">
               <h2 style="margin:0; font-size:clamp(21px,2.3vw,30px); font-weight:500; line-height:1.24; letter-spacing:-0.02em; max-width:26em; text-wrap:pretty;">{{ currentQuestion }}</h2>
               <div class="question-grid" style="display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px;">
@@ -80,6 +80,40 @@
                     <span style="font-size:16px; line-height:1.4; text-align:left;">{{ op.label }}</span>
                   </button>
                 </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isMulti }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:30px;">
+              <h2 style="margin:0; font-size:clamp(21px,2.3vw,30px); font-weight:500; line-height:1.24; letter-spacing:-0.02em; max-width:26em; text-wrap:pretty;">{{ currentQuestion }}</h2>
+              <p style="margin:0; font-size:13px; letter-spacing:0.04em; color:rgba(244,248,247,0.55);">Selecione uma ou mais opções.</p>
+              <div class="question-grid" style="display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px;">
+                <sc-for list="{{ multiOptions }}" as="op" hint-placeholder-count="4">
+                  <button type="button" onClick="{{ op.onClick }}" style="{{ op.style }}" style-hover="border-color:#e9d989; background:rgba(30,195,143,0.1);">
+                    <span style="font-family:Poppins,sans-serif; font-size:10px; letter-spacing:0.16em; color:#e9d989;">{{ op.key }}</span>
+                    <span style="font-size:16px; line-height:1.4; text-align:left;">{{ op.label }}</span>
+                  </button>
+                </sc-for>
+              </div>
+              <div>
+                <button type="button" onClick="{{ onConfirmMulti }}" disabled="{{ !canConfirmMulti }}" style="background:{{ canConfirmMulti ? '#e9d989' : 'rgba(244,248,247,0.14)' }}; color:{{ canConfirmMulti ? '#12312F' : 'rgba(244,248,247,0.45)' }}; border:0; font-family:Poppins,sans-serif; font-size:12.5px; font-weight:500; letter-spacing:0.11em; padding:18px 32px; cursor:{{ canConfirmMulti ? 'pointer' : 'not-allowed' }};">CONTINUAR →</button>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isAge }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:30px;">
+              <h2 style="margin:0; font-size:clamp(21px,2.3vw,30px); font-weight:500; line-height:1.24; letter-spacing:-0.02em; max-width:26em; text-wrap:pretty;">{{ currentQuestion }}</h2>
+              <div style="display:flex; flex-direction:column; gap:20px;">
+                <input type="range" min="{{ ageMin }}" max="{{ ageMax }}" value="{{ ageValue }}" onChange="{{ onAgeChange }}" style="width:100%; accent-color:#e9d989;" />
+                <div style="display:flex; align-items:center; gap:16px;">
+                  <input type="number" min="{{ ageMin }}" max="{{ ageMax }}" value="{{ ageValue }}" onChange="{{ onAgeChange }}" style="width:96px; background:transparent; border:1px solid rgba(244,248,247,0.24); color:#F4F8F7; padding:14px 16px; font-size:18px; outline:none; text-align:center;" style-focus="border-color:#e9d989;" />
+                  <span style="font-size:15px; color:rgba(244,248,247,0.7);">anos</span>
+                </div>
+              </div>
+              <div>
+                <button type="button" onClick="{{ onConfirmAge }}" style="background:#e9d989; color:#12312F; border:0; font-family:Poppins,sans-serif; font-size:12.5px; font-weight:500; letter-spacing:0.11em; padding:18px 32px; cursor:pointer;">CONTINUAR →</button>
               </div>
             </div>
           </sc-if>
@@ -147,24 +181,55 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 const QUESTIONS = [
-  { q: 'Qual é o seu objetivo com uma operação imobiliária?', o: ['Começar a investir no mercado imobiliário', 'Aumentar meu patrimônio atual', 'Construir minha própria casa', 'Ainda estou avaliando as possibilidades'] },
-  { q: 'Em quanto tempo você pretende iniciar a operação?', o: ['Nos próximos 3 meses', 'Entre 3 e 6 meses', 'Entre 6 e 12 meses', 'Sem prazo definido'] },
-  { q: 'Qual é o seu perfil profissional?', o: ['CLT', 'Funcionário público', 'Empresário', 'Autônomo', 'Aposentado', 'Outra situação'] },
-  { q: 'Qual é a sua renda mensal comprovável?', o: ['Até R$ 5 mil', 'R$ 5 mil a R$ 10 mil', 'R$ 10 mil a R$ 20 mil', 'R$ 20 mil a R$ 40 mil', 'Acima de R$ 40 mil'] },
-  { q: 'Qual foi a sua movimentação financeira recorrente nos últimos meses?', o: ['Até R$ 10 mil por mês', 'R$ 10 mil a R$ 30 mil por mês', 'R$ 30 mil a R$ 80 mil por mês', 'Acima de R$ 80 mil por mês', 'Não sei estimar'] },
-  { q: 'Você possui outras fontes de renda recorrentes?', o: ['Sim, aluguéis', 'Sim, participação em empresa', 'Sim, investimentos', 'Não possuo outras fontes'] },
-  { q: 'Qual é a sua faixa de idade?', o: ['Até 29 anos', '30 a 39 anos', '40 a 49 anos', '50 a 59 anos', '60 anos ou mais'] },
-  { q: 'Pretende estruturar a operação junto com outra pessoa?', o: ['Sim, com cônjuge', 'Sim, com sócio ou familiar', 'Não, apenas eu', 'Ainda não decidi'] },
-  { q: 'Qual é a sua situação em relação ao terreno?', o: ['Já possuo o terreno', 'Estou negociando um terreno', 'Ainda não tenho terreno', 'Pretendo comprar pronto'] },
-  { q: 'Qual é o tamanho aproximado da operação pretendida?', o: ['Até R$ 300 mil', 'R$ 300 mil a R$ 500 mil', 'R$ 500 mil a R$ 700 mil', 'R$ 700 mil a R$ 1 milhão', 'Acima de R$ 1 milhão'] },
+  { q: 'Qual é o seu objetivo com uma operação imobiliária?', type: 'single', o: ['Começar a investir no mercado imobiliário', 'Aumentar meu patrimônio atual', 'Construir minha própria casa', 'Ainda estou avaliando as possibilidades'] },
+  { q: 'Em quanto tempo você pretende iniciar a operação?', type: 'single', o: ['Nos próximos 3 meses', 'Entre 3 e 6 meses', 'Entre 6 e 12 meses', 'Sem prazo definido'] },
+  { q: 'Qual é o seu perfil profissional?', type: 'multi', o: ['CLT', 'Funcionário público', 'Empresário', 'Autônomo', 'Aposentado', 'Outra situação'] },
+  { q: 'Qual foi a sua movimentação financeira recorrente nos últimos meses?', type: 'single', o: ['Até R$ 10 mil por mês', 'R$ 10 mil a R$ 30 mil por mês', 'R$ 30 mil a R$ 80 mil por mês', 'Acima de R$ 80 mil por mês', 'Não sei estimar'] },
+  { q: 'Qual é a sua renda mensal declarada?', type: 'single', o: ['Até R$ 5 mil', 'R$ 5 mil a R$ 10 mil', 'R$ 10 mil a R$ 20 mil', 'R$ 20 mil a R$ 40 mil', 'Acima de R$ 40 mil'] },
+  { q: 'Quais são suas outras fontes de renda recorrente?', type: 'multi', exclusive: 'Nenhuma', o: ['Aluguel', 'Participação em Empresas', 'Investimentos', 'Doações', 'Outros', 'Nenhuma'] },
+  { q: 'Qual é a sua idade?', type: 'age', min: 18, max: 90 },
+  { q: 'Pretende estruturar a operação junto com outra pessoa?', type: 'single', o: ['Sim, com cônjuge', 'Sim, com sócio ou familiar', 'Não, apenas eu', 'Ainda não decidi'] },
+  { q: 'Qual é a sua situação em relação ao terreno?', type: 'single', o: ['Já possuo o terreno', 'Estou negociando um terreno', 'Ainda não tenho terreno', 'Pretendo comprar pronto'] },
+  { q: 'Qual é o tamanho aproximado da operação pretendida?', type: 'single', o: ['Até R$ 300 mil', 'R$ 300 mil a R$ 500 mil', 'R$ 500 mil a R$ 700 mil', 'R$ 700 mil a R$ 1 milhão', 'Acima de R$ 1 milhão'] },
 ];
 
 class Component extends DCLogic {
-  state = { step: 0, answers: [], nome: '', email: '', fone: '', done: false, submitting: false, submitError: '' };
+  state = { step: 0, answers: [], draft: [], age: 40, nome: '', email: '', fone: '', done: false, submitting: false, submitError: '' };
 
   pick(i, label) {
     const answers = this.state.answers.slice();
     answers[i] = label;
+    this.setState({ answers, draft: [], step: Math.min(QUESTIONS.length, i + 1) });
+  }
+
+  toggleMulti(i, label) {
+    const q = QUESTIONS[i];
+    let draft = this.state.draft.slice();
+    if (q.exclusive && label === q.exclusive) {
+      draft = draft.includes(label) ? [] : [label];
+    } else {
+      draft = draft.filter((item) => item !== q.exclusive);
+      draft = draft.includes(label) ? draft.filter((item) => item !== label) : draft.concat(label);
+    }
+    this.setState({ draft });
+  }
+
+  confirmMulti(i) {
+    if (!this.state.draft.length) return;
+    const answers = this.state.answers.slice();
+    answers[i] = this.state.draft.join(', ');
+    this.setState({ answers, draft: [], step: Math.min(QUESTIONS.length, i + 1) });
+  }
+
+  setAge(value) {
+    const q = QUESTIONS[this.state.step];
+    const clamped = Math.min(q.max, Math.max(q.min, Number(value) || q.min));
+    this.setState({ age: clamped });
+  }
+
+  confirmAge(i) {
+    const answers = this.state.answers.slice();
+    answers[i] = String(this.state.age) + ' anos';
     this.setState({ answers, step: Math.min(QUESTIONS.length, i + 1) });
   }
 
@@ -216,11 +281,14 @@ class Component extends DCLogic {
       stepPct: (s.done ? 100 : pctNum) + '%',
       stepBarStyle: { width: (s.done ? 100 : pctNum) + '%', height: '1px', background: '#e9d989' },
       isQuestion,
+      isSingle: isQuestion && cur.type === 'single',
+      isMulti: isQuestion && cur.type === 'multi',
+      isAge: isQuestion && cur.type === 'age',
       isContact,
       isDone: s.done,
       canGoBack: s.step > 0 && !s.done,
       currentQuestion: cur.q,
-      currentOptions: cur.o.map((label, k) => ({
+      currentOptions: cur.type === 'single' ? cur.o.map((label, k) => ({
         label,
         key: keys[k] || String(k + 1),
         onClick: () => this.pick(s.step, label),
@@ -236,8 +304,35 @@ class Component extends DCLogic {
           cursor: 'pointer',
           textAlign: 'left',
         },
-      })),
-      onBack: () => this.setState({ step: Math.max(0, s.step - 1) }),
+      })) : [],
+      multiOptions: cur.type === 'multi' ? cur.o.map((label, k) => {
+        const selected = s.draft.includes(label);
+        return {
+          label,
+          key: keys[k] || String(k + 1),
+          onClick: () => this.toggleMulti(s.step, label),
+          style: {
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px',
+            alignItems: 'flex-start',
+            background: selected ? 'rgba(30,195,143,0.14)' : 'transparent',
+            border: '1px solid ' + (selected ? '#e9d989' : 'rgba(244,248,247,0.24)'),
+            color: '#F4F8F7',
+            padding: '21px 22px',
+            cursor: 'pointer',
+            textAlign: 'left',
+          },
+        };
+      }) : [],
+      canConfirmMulti: s.draft.length > 0,
+      onConfirmMulti: () => this.confirmMulti(s.step),
+      ageValue: s.age,
+      ageMin: cur.type === 'age' ? cur.min : 18,
+      ageMax: cur.type === 'age' ? cur.max : 90,
+      onAgeChange: (e) => this.setAge(e.target.value),
+      onConfirmAge: () => this.confirmAge(s.step),
+      onBack: () => this.setState({ step: Math.max(0, s.step - 1), draft: [] }),
       nome: s.nome,
       email: s.email,
       fone: s.fone,
@@ -259,7 +354,7 @@ class Component extends DCLogic {
         cursor: ready ? 'pointer' : 'not-allowed',
       },
       onSubmit: () => this.submitLead(),
-      onRestart: () => this.setState({ step: 0, answers: [], done: false, submitting: false, submitError: '' }),
+      onRestart: () => this.setState({ step: 0, answers: [], draft: [], age: 40, done: false, submitting: false, submitError: '' }),
       doneA: s.nome ? s.nome.split(' ')[0] + ', sua ' : 'Sua ',
       doneB: ' está a caminho.',
       resumo: [
