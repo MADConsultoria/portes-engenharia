@@ -133,7 +133,7 @@ async function createClickUpTask(lead, req) {
     },
     body: JSON.stringify({
       name: `Lead LP | ${lead.nome}`,
-      markdown_description: buildTaskDescription(lead, req),
+      markdown_content: buildTaskDescription(lead, req),
     }),
     signal: AbortSignal.timeout(12000),
   });
