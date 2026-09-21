@@ -25,8 +25,9 @@ const server = http.createServer((req, res) => {
   } else if (reqPath.startsWith(`${basePath}/`)) {
     reqPath = reqPath.slice(basePath.length);
   } else if (reqPath === '/') {
-    reqPath = '/Portes Engenharia.dc.html';
+    reqPath = '/index.html';
   }
+  if (reqPath.endsWith('/')) reqPath += 'index.html';
   const filePath = path.join(root, reqPath);
   if (!filePath.startsWith(root)) {
     res.writeHead(403);
