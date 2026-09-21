@@ -16,10 +16,17 @@ const MIME = {
 };
 
 const root = __dirname;
+const basePath = '/viabilidade-estrategica';
 
 const server = http.createServer((req, res) => {
   let reqPath = decodeURIComponent(url.parse(req.url).pathname);
-  if (reqPath === '/') reqPath = '/Portes Engenharia.dc.html';
+  if (reqPath === basePath || reqPath === `${basePath}/`) {
+    reqPath = '/index.html';
+  } else if (reqPath.startsWith(`${basePath}/`)) {
+    reqPath = reqPath.slice(basePath.length);
+  } else if (reqPath === '/') {
+    reqPath = '/Portes Engenharia.dc.html';
+  }
   const filePath = path.join(root, reqPath);
   if (!filePath.startsWith(root)) {
     res.writeHead(403);
