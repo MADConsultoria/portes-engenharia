@@ -104,8 +104,11 @@
                   <input type="tel" value="{{ fone }}" onChange="{{ onFone }}" placeholder="(00) 00000-0000" style="background:transparent; border:1px solid rgba(244,248,247,0.24); color:#F4F8F7; padding:16px 18px; font-size:16px; outline:none;" style-focus="border-color:#e9d989;" />
                 </label>
               </div>
+              <sc-if value="{{ hasSubmitError }}" hint-placeholder-val="{{ false }}">
+                <p role="alert" style="margin:0; color:#ffd6d0; font-size:14px; line-height:1.5;">{{ submitError }}</p>
+              </sc-if>
               <div class="submit-row" style="display:flex; align-items:center; gap:24px; flex-wrap:wrap;">
-                <button type="button" onClick="{{ onSubmit }}" style="{{ submitStyle }}">VER MINHA PRÉVIA →</button>
+                <button type="button" onClick="{{ onSubmit }}" style="{{ submitStyle }}">{{ submitLabel }}</button>
                 <span style="font-family:Poppins,sans-serif; font-size:10px; line-height:1.7; letter-spacing:0.06em; color:rgba(244,248,247,0.5); max-width:26em;">Análise baseada nas informações declaradas por você. Não constitui promessa de aprovação, liberação de recursos ou rentabilidade.</span>
               </div>
             </div>
@@ -157,12 +160,40 @@ const QUESTIONS = [
 ];
 
 class Component extends DCLogic {
-  state = { step: 0, answers: [], nome: '', email: '', fone: '', done: false };
+  state = { step: 0, answers: [], nome: '', email: '', fone: '', done: false, submitting: false, submitError: '' };
 
   pick(i, label) {
     const answers = this.state.answers.slice();
     answers[i] = label;
     this.setState({ answers, step: Math.min(QUESTIONS.length, i + 1) });
+  }
+
+  async submitLead() {
+    const s = this.state;
+    const ready = s.nome.trim().length > 1 && s.email.includes('@') && s.fone.trim().length > 7;
+    if (!ready || s.submitting) return;
+
+    this.setState({ submitting: true, submitError: '' });
+    try {
+      const response = await fetch('../api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nome: s.nome,
+          email: s.email,
+          fone: s.fone,
+          answers: s.answers,
+          website: '',
+        }),
+      });
+      if (!response.ok) throw new Error('SUBMIT_FAILED');
+      this.setState({ done: true, submitting: false, submitError: '' });
+    } catch {
+      this.setState({
+        submitting: false,
+        submitError: 'Não foi possível enviar agora. Tente novamente em instantes.',
+      });
+    }
   }
 
   renderVals() {
@@ -172,7 +203,7 @@ class Component extends DCLogic {
     const isQuestion = s.step < QUESTIONS.length && !s.done;
     const cur = QUESTIONS[Math.min(QUESTIONS.length - 1, s.step)];
     const pctNum = Math.round((Math.min(s.step, total) / total) * 100);
-    const ready = s.nome.trim().length > 1 && s.email.includes('@') && s.fone.trim().length > 7;
+    const ready = s.nome.trim().length > 1 && s.email.includes('@') && s.fone.trim().length > 7 && !s.submitting;
     const keys = ['A', 'B', 'C', 'D', 'E', 'F'];
 
     return {
@@ -208,9 +239,12 @@ class Component extends DCLogic {
       nome: s.nome,
       email: s.email,
       fone: s.fone,
-      onNome: (e) => this.setState({ nome: e.target.value }),
-      onEmail: (e) => this.setState({ email: e.target.value }),
-      onFone: (e) => this.setState({ fone: e.target.value }),
+      onNome: (e) => this.setState({ nome: e.target.value, submitError: '' }),
+      onEmail: (e) => this.setState({ email: e.target.value, submitError: '' }),
+      onFone: (e) => this.setState({ fone: e.target.value, submitError: '' }),
+      hasSubmitError: Boolean(s.submitError),
+      submitError: s.submitError,
+      submitLabel: s.submitting ? 'ENVIANDO...' : 'VER MINHA PRÉVIA →',
       submitStyle: {
         background: ready ? '#e9d989' : 'rgba(244,248,247,0.14)',
         color: ready ? '#12312F' : 'rgba(244,248,247,0.45)',
@@ -222,8 +256,8 @@ class Component extends DCLogic {
         padding: '20px 32px',
         cursor: ready ? 'pointer' : 'not-allowed',
       },
-      onSubmit: () => { if (ready) this.setState({ done: true }); },
-      onRestart: () => this.setState({ step: 0, answers: [], done: false }),
+      onSubmit: () => this.submitLead(),
+      onRestart: () => this.setState({ step: 0, answers: [], done: false, submitting: false, submitError: '' }),
       doneA: s.nome ? s.nome.split(' ')[0] + ', sua ' : 'Sua ',
       doneB: ' está a caminho.',
       resumo: [

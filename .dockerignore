@@ -1,0 +1,9 @@
+.git
+.claude
+node_modules
+uploads
+web
+*.jsx
+gen-*.js
+_optimize-images.js
+*.md
