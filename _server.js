@@ -118,6 +118,16 @@ function buildTaskDescription(lead, req) {
   ].join('\n');
 }
 
+function classifyClickUpError(detail) {
+  const message = detail.toLowerCase();
+  if (message.includes('list')) return 'LIST_ID';
+  if (message.includes('token') || message.includes('auth') || message.includes('oauth')) return 'AUTH';
+  if (message.includes('required')) return 'REQUIRED_FIELD';
+  if (message.includes('markdown') || message.includes('description') || message.includes('payload')) return 'PAYLOAD';
+  if (message.includes('name')) return 'TASK_NAME';
+  return '';
+}
+
 async function createClickUpTask(lead, req) {
   const token = String(process.env.CLICKUP_API_TOKEN || '').trim();
   const listId = String(process.env.CLICKUP_LIST_ID || '').trim();
@@ -143,12 +153,14 @@ async function createClickUpTask(lead, req) {
     console.error(`ClickUp API error ${response.status}: ${detail}`);
     const error = new Error('CLICKUP_REQUEST_FAILED');
     error.diagnostic = `CLICKUP_${response.status}`;
+    const category = classifyClickUpError(detail);
     try {
       const parsed = JSON.parse(detail);
       if (parsed.ECODE) error.diagnostic += `_${String(parsed.ECODE).replace(/[^A-Z0-9_-]/gi, '')}`;
     } catch {
       // The HTTP status is enough when ClickUp does not return JSON.
     }
+    if (category) error.diagnostic += `_${category}`;
     throw error;
   }
 }
