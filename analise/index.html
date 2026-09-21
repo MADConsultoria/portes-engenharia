@@ -17,8 +17,10 @@
   * { box-sizing: border-box; }
   a { color: #e9d989; text-decoration: none; }
   a:hover { color: #B6E6DE; }
+  .form-card a:hover { color: #0F7A5C; }
   input { font: inherit; }
   ::selection { background: #e9d989; color: #12312F; }
+  .form-card ::selection { background: #0F7A5C; color: #FFFFFF; }
 
   @media (max-width: 640px) {
     html { width: 100%; overflow-x: hidden; }
@@ -50,9 +52,9 @@
   <div style="position:absolute; inset:0; pointer-events:none; background-image:linear-gradient(rgba(182,230,222,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(182,230,222,0.07) 1px, transparent 1px); background-size:46px 46px;"></div>
   <div style="position:absolute; inset:0; pointer-events:none; background:radial-gradient(90% 55% at 20% 8%, rgba(30,195,143,0.2) 0%, rgba(30,195,143,0) 60%), radial-gradient(80% 50% at 88% 92%, rgba(102,149,147,0.26) 0%, rgba(102,149,147,0) 64%);"></div>
 
-  <header class="form-header" style="position:relative; z-index:1; display:flex; align-items:center; justify-content:space-between; gap:24px; padding:22px 5vw; border-bottom:1px solid rgba(244,248,247,0.14);">
+  <header class="form-header" style="position:relative; z-index:1; display:flex; align-items:center; justify-content:space-between; gap:24px; padding:22px 5vw; border-bottom:1px solid rgba(244,248,247,0.18); background:rgba(15,42,40,0.4);">
     <img src="../brand/logo-portes.png" alt="Portes Engenharia" style="height:34px; width:auto; flex:0 0 auto; display:block;" />
-    <a href="../" style="font-family:Poppins,sans-serif; font-size:10.5px; letter-spacing:0.14em; color:rgba(244,248,247,0.6); white-space:nowrap;">← VOLTAR</a>
+    <a href="../" style="font-family:Poppins,sans-serif; font-size:11px; font-weight:600; letter-spacing:0.14em; color:rgba(244,248,247,0.85); white-space:nowrap;">← VOLTAR</a>
   </header>
 
   <main class="form-main" style="position:relative; z-index:1; flex:1; display:flex; flex-direction:column; justify-content:center; padding:70px 5vw 90px;">
@@ -62,22 +64,22 @@
         <h1 style="margin:0; font-size:clamp(24px,2.8vw,38px); font-weight:700; line-height:1.12; letter-spacing:-0.028em; max-width:22em; text-wrap:pretty;">{{ titleA }}<span style="font-family:'Playfair Display',serif; font-weight:500; font-style:italic; letter-spacing:0; color:#6FDFBB;">{{ titleAccent }}</span>{{ titleB }}</h1>
       </div>
 
-      <div class="form-card" style="border:1px solid rgba(244,248,247,0.2); background:rgba(244,248,247,0.03);">
-        <div class="form-progress" style="display:flex; align-items:center; gap:20px; padding:18px 32px; border-bottom:1px solid rgba(244,248,247,0.16);">
-          <span style="font-family:Poppins,sans-serif; font-size:10px; letter-spacing:0.18em; color:rgba(244,248,247,0.6); white-space:nowrap;">{{ stepLabel }}</span>
-          <div style="flex:1; height:1px; background:rgba(244,248,247,0.18);"><div style="{{ stepBarStyle }}"></div></div>
-          <span style="font-family:Poppins,sans-serif; font-size:10px; letter-spacing:0.18em; color:#e9d989;">{{ stepPct }}</span>
+      <div class="form-card" style="border:1px solid rgba(18,49,47,0.12); background:#FBF9F2; box-shadow:0 20px 60px rgba(0,0,0,0.28);">
+        <div class="form-progress" style="display:flex; align-items:center; gap:20px; padding:18px 32px; border-bottom:1px solid rgba(18,49,47,0.12);">
+          <span style="font-family:Poppins,sans-serif; font-size:10.5px; font-weight:600; letter-spacing:0.18em; color:rgba(18,49,47,0.68); white-space:nowrap;">{{ stepLabel }}</span>
+          <div style="flex:1; height:2px; background:rgba(18,49,47,0.14);"><div style="{{ stepBarStyle }}"></div></div>
+          <span style="font-family:Poppins,sans-serif; font-size:10.5px; font-weight:600; letter-spacing:0.18em; color:#0F7A5C;">{{ stepPct }}</span>
         </div>
 
-        <div class="form-content" style="padding:46px 32px 42px;">
+        <div class="form-content" style="padding:46px 32px 42px; color:#12312F;">
           <sc-if value="{{ isSingle }}" hint-placeholder-val="{{ true }}">
             <div style="display:flex; flex-direction:column; gap:30px;">
-              <h2 style="margin:0; font-size:clamp(21px,2.3vw,30px); font-weight:500; line-height:1.24; letter-spacing:-0.02em; max-width:26em; text-wrap:pretty;">{{ currentQuestion }}</h2>
+              <h2 style="margin:0; font-size:clamp(21px,2.3vw,30px); font-weight:600; line-height:1.24; letter-spacing:-0.02em; max-width:26em; text-wrap:pretty; color:#12312F;">{{ currentQuestion }}</h2>
               <div class="question-grid" style="display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px;">
                 <sc-for list="{{ currentOptions }}" as="op" hint-placeholder-count="4">
-                  <button type="button" onClick="{{ op.onClick }}" style="{{ op.style }}" style-hover="border-color:#e9d989; background:rgba(30,195,143,0.1);">
-                    <span style="font-family:Poppins,sans-serif; font-size:10px; letter-spacing:0.16em; color:#e9d989;">{{ op.key }}</span>
-                    <span style="font-size:16px; line-height:1.4; text-align:left;">{{ op.label }}</span>
+                  <button type="button" onClick="{{ op.onClick }}" style="{{ op.style }}" style-hover="border-color:#0F7A5C; background:rgba(15,122,92,0.08);">
+                    <span style="font-family:Poppins,sans-serif; font-size:10px; font-weight:700; letter-spacing:0.16em; color:#0F7A5C;">{{ op.key }}</span>
+                    <span style="font-size:16.5px; line-height:1.4; text-align:left; color:#12312F;">{{ op.label }}</span>
                   </button>
                 </sc-for>
               </div>
@@ -86,34 +88,34 @@
 
           <sc-if value="{{ isMulti }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex; flex-direction:column; gap:30px;">
-              <h2 style="margin:0; font-size:clamp(21px,2.3vw,30px); font-weight:500; line-height:1.24; letter-spacing:-0.02em; max-width:26em; text-wrap:pretty;">{{ currentQuestion }}</h2>
-              <p style="margin:0; font-size:13px; letter-spacing:0.04em; color:rgba(244,248,247,0.55);">Selecione uma ou mais opções.</p>
+              <h2 style="margin:0; font-size:clamp(21px,2.3vw,30px); font-weight:600; line-height:1.24; letter-spacing:-0.02em; max-width:26em; text-wrap:pretty; color:#12312F;">{{ currentQuestion }}</h2>
+              <p style="margin:0; font-size:13.5px; letter-spacing:0.04em; color:rgba(18,49,47,0.62);">Selecione uma ou mais opções.</p>
               <div class="question-grid" style="display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px;">
                 <sc-for list="{{ multiOptions }}" as="op" hint-placeholder-count="4">
-                  <button type="button" onClick="{{ op.onClick }}" style="{{ op.style }}" style-hover="border-color:#e9d989; background:rgba(30,195,143,0.1);">
-                    <span style="font-family:Poppins,sans-serif; font-size:10px; letter-spacing:0.16em; color:#e9d989;">{{ op.key }}</span>
-                    <span style="font-size:16px; line-height:1.4; text-align:left;">{{ op.label }}</span>
+                  <button type="button" onClick="{{ op.onClick }}" style="{{ op.style }}" style-hover="border-color:#0F7A5C; background:rgba(15,122,92,0.08);">
+                    <span style="font-family:Poppins,sans-serif; font-size:10px; font-weight:700; letter-spacing:0.16em; color:#0F7A5C;">{{ op.key }}</span>
+                    <span style="font-size:16.5px; line-height:1.4; text-align:left; color:#12312F;">{{ op.label }}</span>
                   </button>
                 </sc-for>
               </div>
               <div>
-                <button type="button" onClick="{{ onConfirmMulti }}" disabled="{{ !canConfirmMulti }}" style="background:{{ canConfirmMulti ? '#e9d989' : 'rgba(244,248,247,0.14)' }}; color:{{ canConfirmMulti ? '#12312F' : 'rgba(244,248,247,0.45)' }}; border:0; font-family:Poppins,sans-serif; font-size:12.5px; font-weight:500; letter-spacing:0.11em; padding:18px 32px; cursor:{{ canConfirmMulti ? 'pointer' : 'not-allowed' }};">CONTINUAR →</button>
+                <button type="button" onClick="{{ onConfirmMulti }}" disabled="{{ !canConfirmMulti }}" style="background:{{ canConfirmMulti ? '#0F7A5C' : 'rgba(18,49,47,0.1)' }}; color:{{ canConfirmMulti ? '#FFFFFF' : 'rgba(18,49,47,0.4)' }}; border:0; font-family:Poppins,sans-serif; font-size:12.5px; font-weight:600; letter-spacing:0.11em; padding:18px 32px; cursor:{{ canConfirmMulti ? 'pointer' : 'not-allowed' }};">CONTINUAR →</button>
               </div>
             </div>
           </sc-if>
 
           <sc-if value="{{ isAge }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex; flex-direction:column; gap:30px;">
-              <h2 style="margin:0; font-size:clamp(21px,2.3vw,30px); font-weight:500; line-height:1.24; letter-spacing:-0.02em; max-width:26em; text-wrap:pretty;">{{ currentQuestion }}</h2>
+              <h2 style="margin:0; font-size:clamp(21px,2.3vw,30px); font-weight:600; line-height:1.24; letter-spacing:-0.02em; max-width:26em; text-wrap:pretty; color:#12312F;">{{ currentQuestion }}</h2>
               <div style="display:flex; flex-direction:column; gap:20px;">
-                <input type="range" min="{{ ageMin }}" max="{{ ageMax }}" value="{{ ageValue }}" onChange="{{ onAgeChange }}" style="width:100%; accent-color:#e9d989;" />
+                <input type="range" min="{{ ageMin }}" max="{{ ageMax }}" value="{{ ageValue }}" onChange="{{ onAgeChange }}" style="width:100%; accent-color:#0F7A5C;" />
                 <div style="display:flex; align-items:center; gap:16px;">
-                  <input type="number" min="{{ ageMin }}" max="{{ ageMax }}" value="{{ ageValue }}" onChange="{{ onAgeChange }}" style="width:96px; background:transparent; border:1px solid rgba(244,248,247,0.24); color:#F4F8F7; padding:14px 16px; font-size:18px; outline:none; text-align:center;" style-focus="border-color:#e9d989;" />
-                  <span style="font-size:15px; color:rgba(244,248,247,0.7);">anos</span>
+                  <input type="number" min="{{ ageMin }}" max="{{ ageMax }}" value="{{ ageValue }}" onChange="{{ onAgeChange }}" style="width:96px; background:#FFFFFF; border:1px solid rgba(18,49,47,0.22); color:#12312F; padding:14px 16px; font-size:18px; font-weight:600; outline:none; text-align:center;" style-focus="border-color:#0F7A5C;" />
+                  <span style="font-size:15px; color:rgba(18,49,47,0.68);">anos</span>
                 </div>
               </div>
               <div>
-                <button type="button" onClick="{{ onConfirmAge }}" style="background:#e9d989; color:#12312F; border:0; font-family:Poppins,sans-serif; font-size:12.5px; font-weight:500; letter-spacing:0.11em; padding:18px 32px; cursor:pointer;">CONTINUAR →</button>
+                <button type="button" onClick="{{ onConfirmAge }}" style="background:#0F7A5C; color:#FFFFFF; border:0; font-family:Poppins,sans-serif; font-size:12.5px; font-weight:600; letter-spacing:0.11em; padding:18px 32px; cursor:pointer;">CONTINUAR →</button>
               </div>
             </div>
           </sc-if>
@@ -121,57 +123,57 @@
           <sc-if value="{{ isContact }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex; flex-direction:column; gap:28px;">
               <div style="display:flex; flex-direction:column; gap:12px;">
-                <h2 style="margin:0; font-size:clamp(21px,2.3vw,30px); font-weight:500; line-height:1.24; letter-spacing:-0.02em; max-width:26em; text-wrap:pretty;">Sua prévia está pronta. Para onde enviamos a análise?</h2>
-                <p style="margin:0; font-size:15.5px; line-height:1.62; color:rgba(244,248,247,0.68); max-width:38em; text-wrap:pretty;">Você recebe gratuitamente uma prévia da análise e, em seguida, a condição para receber o Relatório de Potencial Imobiliário completo.</p>
+                <h2 style="margin:0; font-size:clamp(21px,2.3vw,30px); font-weight:600; line-height:1.24; letter-spacing:-0.02em; max-width:26em; text-wrap:pretty; color:#12312F;">Sua prévia está pronta. Para onde enviamos a análise?</h2>
+                <p style="margin:0; font-size:15.5px; line-height:1.62; color:rgba(18,49,47,0.7); max-width:38em; text-wrap:pretty;">Você recebe gratuitamente uma prévia da análise e, em seguida, a condição para receber o Relatório de Potencial Imobiliário completo.</p>
               </div>
               <div class="contact-grid" style="display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px;">
                 <label style="display:flex; flex-direction:column; gap:9px; grid-column:span 2;">
-                  <span style="font-family:Poppins,sans-serif; font-size:10px; letter-spacing:0.16em; color:rgba(244,248,247,0.6);">NOME COMPLETO</span>
-                  <input type="text" value="{{ nome }}" onChange="{{ onNome }}" placeholder="Como devemos te chamar" style="background:transparent; border:1px solid rgba(244,248,247,0.24); color:#F4F8F7; padding:16px 18px; font-size:16px; outline:none;" style-focus="border-color:#e9d989;" />
+                  <span style="font-family:Poppins,sans-serif; font-size:10.5px; font-weight:600; letter-spacing:0.16em; color:rgba(18,49,47,0.65);">NOME COMPLETO</span>
+                  <input type="text" value="{{ nome }}" onChange="{{ onNome }}" placeholder="Como devemos te chamar" style="background:#FFFFFF; border:1px solid rgba(18,49,47,0.22); color:#12312F; padding:16px 18px; font-size:16px; outline:none;" style-focus="border-color:#0F7A5C;" />
                 </label>
                 <label style="display:flex; flex-direction:column; gap:9px;">
-                  <span style="font-family:Poppins,sans-serif; font-size:10px; letter-spacing:0.16em; color:rgba(244,248,247,0.6);">E-MAIL</span>
-                  <input type="email" value="{{ email }}" onChange="{{ onEmail }}" placeholder="seu@email.com" style="background:transparent; border:1px solid rgba(244,248,247,0.24); color:#F4F8F7; padding:16px 18px; font-size:16px; outline:none;" style-focus="border-color:#e9d989;" />
+                  <span style="font-family:Poppins,sans-serif; font-size:10.5px; font-weight:600; letter-spacing:0.16em; color:rgba(18,49,47,0.65);">E-MAIL</span>
+                  <input type="email" value="{{ email }}" onChange="{{ onEmail }}" placeholder="seu@email.com" style="background:#FFFFFF; border:1px solid rgba(18,49,47,0.22); color:#12312F; padding:16px 18px; font-size:16px; outline:none;" style-focus="border-color:#0F7A5C;" />
                 </label>
                 <label style="display:flex; flex-direction:column; gap:9px;">
-                  <span style="font-family:Poppins,sans-serif; font-size:10px; letter-spacing:0.16em; color:rgba(244,248,247,0.6);">WHATSAPP</span>
-                  <input type="tel" value="{{ fone }}" onChange="{{ onFone }}" placeholder="(00) 00000-0000" style="background:transparent; border:1px solid rgba(244,248,247,0.24); color:#F4F8F7; padding:16px 18px; font-size:16px; outline:none;" style-focus="border-color:#e9d989;" />
+                  <span style="font-family:Poppins,sans-serif; font-size:10.5px; font-weight:600; letter-spacing:0.16em; color:rgba(18,49,47,0.65);">WHATSAPP</span>
+                  <input type="tel" value="{{ fone }}" onChange="{{ onFone }}" placeholder="(00) 00000-0000" style="background:#FFFFFF; border:1px solid rgba(18,49,47,0.22); color:#12312F; padding:16px 18px; font-size:16px; outline:none;" style-focus="border-color:#0F7A5C;" />
                 </label>
               </div>
               <sc-if value="{{ hasSubmitError }}" hint-placeholder-val="{{ false }}">
-                <p role="alert" style="margin:0; color:#ffd6d0; font-size:14px; line-height:1.5;">{{ submitError }}</p>
+                <p role="alert" style="margin:0; color:#C23B2E; font-size:14px; line-height:1.5; font-weight:500;">{{ submitError }}</p>
               </sc-if>
               <div class="submit-row" style="display:flex; align-items:center; gap:24px; flex-wrap:wrap;">
                 <button type="button" onClick="{{ onSubmit }}" style="{{ submitStyle }}">{{ submitLabel }}</button>
-                <span style="font-family:Poppins,sans-serif; font-size:10px; line-height:1.7; letter-spacing:0.06em; color:rgba(244,248,247,0.5); max-width:26em;">Análise baseada nas informações declaradas por você. Não constitui promessa de aprovação, liberação de recursos ou rentabilidade.</span>
+                <span style="font-family:Poppins,sans-serif; font-size:10px; line-height:1.7; letter-spacing:0.06em; color:rgba(18,49,47,0.55); max-width:26em;">Análise baseada nas informações declaradas por você. Não constitui promessa de aprovação, liberação de recursos ou rentabilidade.</span>
               </div>
             </div>
           </sc-if>
 
           <sc-if value="{{ isDone }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex; flex-direction:column; gap:24px;">
-              <span style="font-family:Poppins,sans-serif; font-size:10px; letter-spacing:0.2em; color:#e9d989;">PRÉVIA GERADA</span>
-              <h2 style="margin:0; font-size:clamp(23px,2.5vw,33px); font-weight:700; line-height:1.14; letter-spacing:-0.026em; max-width:24em; text-wrap:pretty;">{{ doneA }}<span style="font-family:'Playfair Display',serif; font-weight:500; font-style:italic; letter-spacing:0; color:#6FDFBB;">prévia</span>{{ doneB }}</h2>
-              <p style="margin:0; font-size:16.5px; line-height:1.66; color:rgba(244,248,247,0.74); max-width:40em; text-wrap:pretty;">Um especialista da Portes vai te enviar a prévia e apresentar o Relatório de Potencial Imobiliário completo, com o detalhamento da estrutura compatível com o seu momento.</p>
-              <div class="summary-grid" style="display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1px; background:rgba(244,248,247,0.18); margin-top:8px;">
+              <span style="font-family:Poppins,sans-serif; font-size:10px; font-weight:700; letter-spacing:0.2em; color:#0F7A5C;">PRÉVIA GERADA</span>
+              <h2 style="margin:0; font-size:clamp(23px,2.5vw,33px); font-weight:700; line-height:1.14; letter-spacing:-0.026em; max-width:24em; text-wrap:pretty; color:#12312F;">{{ doneA }}<span style="font-family:'Playfair Display',serif; font-weight:500; font-style:italic; letter-spacing:0; color:#0F7A5C;">prévia</span>{{ doneB }}</h2>
+              <p style="margin:0; font-size:16.5px; line-height:1.66; color:rgba(18,49,47,0.75); max-width:40em; text-wrap:pretty;">Um especialista da Portes vai te enviar a prévia e apresentar o Relatório de Potencial Imobiliário completo, com o detalhamento da estrutura compatível com o seu momento.</p>
+              <div class="summary-grid" style="display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1px; background:rgba(18,49,47,0.14); margin-top:8px;">
                 <sc-for list="{{ resumo }}" as="rs" hint-placeholder-count="3">
-                  <div style="background:rgba(18,49,47,0.72); padding:24px 22px; display:flex; flex-direction:column; gap:10px;">
-                    <span style="font-family:Poppins,sans-serif; font-size:9.5px; letter-spacing:0.16em; color:rgba(244,248,247,0.55);">{{ rs.rotulo }}</span>
-                    <span style="font-size:16px; font-weight:600; line-height:1.25;">{{ rs.valor }}</span>
+                  <div style="background:#FFFFFF; padding:24px 22px; display:flex; flex-direction:column; gap:10px;">
+                    <span style="font-family:Poppins,sans-serif; font-size:9.5px; font-weight:600; letter-spacing:0.16em; color:rgba(18,49,47,0.55);">{{ rs.rotulo }}</span>
+                    <span style="font-size:16px; font-weight:700; line-height:1.25; color:#12312F;">{{ rs.valor }}</span>
                   </div>
                 </sc-for>
               </div>
               <div class="result-actions" style="display:flex; gap:14px; flex-wrap:wrap; margin-top:8px;">
-                <button type="button" onClick="{{ onRestart }}" style="background:transparent; border:1px solid rgba(244,248,247,0.3); color:#F4F8F7; font-family:Poppins,sans-serif; font-size:11px; letter-spacing:0.12em; padding:15px 24px; cursor:pointer;" style-hover="border-color:#e9d989; color:#e9d989;">REFAZER A ANÁLISE</button>
-                <a href="../" style="border:1px solid rgba(244,248,247,0.3); color:#F4F8F7; font-family:Poppins,sans-serif; font-size:11px; letter-spacing:0.12em; padding:15px 24px;">VOLTAR AO SITE</a>
+                <button type="button" onClick="{{ onRestart }}" style="background:transparent; border:1px solid rgba(18,49,47,0.28); color:#12312F; font-family:Poppins,sans-serif; font-size:11px; font-weight:600; letter-spacing:0.12em; padding:15px 24px; cursor:pointer;" style-hover="border-color:#0F7A5C; color:#0F7A5C;">REFAZER A ANÁLISE</button>
+                <a href="../" style="border:1px solid rgba(18,49,47,0.28); color:#12312F; font-family:Poppins,sans-serif; font-size:11px; font-weight:600; letter-spacing:0.12em; padding:15px 24px;">VOLTAR AO SITE</a>
               </div>
             </div>
           </sc-if>
         </div>
 
         <sc-if value="{{ canGoBack }}" hint-placeholder-val="{{ false }}">
-          <div class="form-back" style="padding:17px 32px; border-top:1px solid rgba(244,248,247,0.16);">
-            <button type="button" onClick="{{ onBack }}" style="background:transparent; border:0; color:rgba(244,248,247,0.6); font-family:Poppins,sans-serif; font-size:10.5px; letter-spacing:0.14em; cursor:pointer; padding:0;" style-hover="color:#e9d989;">← VOLTAR</button>
+          <div class="form-back" style="padding:17px 32px; border-top:1px solid rgba(18,49,47,0.12);">
+            <button type="button" onClick="{{ onBack }}" style="background:transparent; border:0; color:rgba(18,49,47,0.6); font-family:Poppins,sans-serif; font-size:10.5px; font-weight:600; letter-spacing:0.14em; cursor:pointer; padding:0;" style-hover="color:#0F7A5C;">← VOLTAR</button>
           </div>
         </sc-if>
       </div>
@@ -279,7 +281,7 @@ class Component extends DCLogic {
       titleB: s.done ? '.' : isContact ? '.' : ' da sua estrutura financeira hoje.',
       stepLabel: s.done ? 'CONCLUÍDO' : 'ETAPA ' + String(Math.min(s.step + 1, total)).padStart(2, '0') + ' DE ' + total,
       stepPct: (s.done ? 100 : pctNum) + '%',
-      stepBarStyle: { width: (s.done ? 100 : pctNum) + '%', height: '1px', background: '#e9d989' },
+      stepBarStyle: { width: (s.done ? 100 : pctNum) + '%', height: '2px', background: '#0F7A5C' },
       isQuestion,
       isSingle: isQuestion && cur.type === 'single',
       isMulti: isQuestion && cur.type === 'multi',
@@ -297,9 +299,9 @@ class Component extends DCLogic {
           flexDirection: 'column',
           gap: '10px',
           alignItems: 'flex-start',
-          background: s.answers[s.step] === label ? 'rgba(30,195,143,0.14)' : 'transparent',
-          border: '1px solid ' + (s.answers[s.step] === label ? '#e9d989' : 'rgba(244,248,247,0.24)'),
-          color: '#F4F8F7',
+          background: s.answers[s.step] === label ? 'rgba(15,122,92,0.1)' : '#FFFFFF',
+          border: '1px solid ' + (s.answers[s.step] === label ? '#0F7A5C' : 'rgba(18,49,47,0.18)'),
+          color: '#12312F',
           padding: '21px 22px',
           cursor: 'pointer',
           textAlign: 'left',
@@ -316,9 +318,9 @@ class Component extends DCLogic {
             flexDirection: 'column',
             gap: '10px',
             alignItems: 'flex-start',
-            background: selected ? 'rgba(30,195,143,0.14)' : 'transparent',
-            border: '1px solid ' + (selected ? '#e9d989' : 'rgba(244,248,247,0.24)'),
-            color: '#F4F8F7',
+            background: selected ? 'rgba(15,122,92,0.1)' : '#FFFFFF',
+            border: '1px solid ' + (selected ? '#0F7A5C' : 'rgba(18,49,47,0.18)'),
+            color: '#12312F',
             padding: '21px 22px',
             cursor: 'pointer',
             textAlign: 'left',
@@ -343,12 +345,12 @@ class Component extends DCLogic {
       submitError: s.submitError,
       submitLabel: s.submitting ? 'ENVIANDO...' : 'VER MINHA PRÉVIA →',
       submitStyle: {
-        background: ready ? '#e9d989' : 'rgba(244,248,247,0.14)',
-        color: ready ? '#12312F' : 'rgba(244,248,247,0.45)',
+        background: ready ? '#0F7A5C' : 'rgba(18,49,47,0.1)',
+        color: ready ? '#FFFFFF' : 'rgba(18,49,47,0.4)',
         border: 0,
         fontFamily: "Poppins,sans-serif",
         fontSize: '12.5px',
-        fontWeight: 500,
+        fontWeight: 600,
         letterSpacing: '0.11em',
         padding: '20px 32px',
         cursor: ready ? 'pointer' : 'not-allowed',
