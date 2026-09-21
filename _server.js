@@ -188,14 +188,14 @@ async function handleLead(req, res) {
       });
     }
     if (error.message === 'CLICKUP_REQUEST_FAILED') {
-      return sendJson(res, 502, {
+      return sendJson(res, 424, {
         ok: false,
         error: 'O ClickUp recusou o cadastro.',
         diagnostic: error.diagnostic || 'CLICKUP_REQUEST_FAILED',
       });
     }
     console.error('Lead submission failed:', error);
-    return sendJson(res, 502, {
+    return sendJson(res, 424, {
       ok: false,
       error: 'Nao foi possivel registrar seus dados agora.',
       diagnostic: 'CLICKUP_CONNECTION_FAILED',
