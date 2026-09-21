@@ -119,8 +119,8 @@ function buildTaskDescription(lead, req) {
 }
 
 async function createClickUpTask(lead, req) {
-  const token = process.env.CLICKUP_API_TOKEN;
-  const listId = process.env.CLICKUP_LIST_ID;
+  const token = String(process.env.CLICKUP_API_TOKEN || '').trim();
+  const listId = String(process.env.CLICKUP_LIST_ID || '').trim();
   const apiBase = process.env.CLICKUP_API_BASE_URL || 'https://api.clickup.com/api/v2';
 
   if (!token || !listId) throw new Error('CLICKUP_NOT_CONFIGURED');
@@ -141,7 +141,15 @@ async function createClickUpTask(lead, req) {
   if (!response.ok) {
     const detail = (await response.text()).slice(0, 500);
     console.error(`ClickUp API error ${response.status}: ${detail}`);
-    throw new Error('CLICKUP_REQUEST_FAILED');
+    const error = new Error('CLICKUP_REQUEST_FAILED');
+    error.diagnostic = `CLICKUP_${response.status}`;
+    try {
+      const parsed = JSON.parse(detail);
+      if (parsed.ECODE) error.diagnostic += `_${String(parsed.ECODE).replace(/[^A-Z0-9_-]/gi, '')}`;
+    } catch {
+      // The HTTP status is enough when ClickUp does not return JSON.
+    }
+    throw error;
   }
 }
 
@@ -173,10 +181,25 @@ async function handleLead(req, res) {
     }
     if (error.message === 'CLICKUP_NOT_CONFIGURED') {
       console.error('Set CLICKUP_API_TOKEN and CLICKUP_LIST_ID before receiving leads.');
-      return sendJson(res, 503, { ok: false, error: 'Integracao temporariamente indisponivel.' });
+      return sendJson(res, 503, {
+        ok: false,
+        error: 'Integracao temporariamente indisponivel.',
+        diagnostic: 'CLICKUP_NOT_CONFIGURED',
+      });
+    }
+    if (error.message === 'CLICKUP_REQUEST_FAILED') {
+      return sendJson(res, 502, {
+        ok: false,
+        error: 'O ClickUp recusou o cadastro.',
+        diagnostic: error.diagnostic || 'CLICKUP_REQUEST_FAILED',
+      });
     }
     console.error('Lead submission failed:', error);
-    return sendJson(res, 502, { ok: false, error: 'Nao foi possivel registrar seus dados agora.' });
+    return sendJson(res, 502, {
+      ok: false,
+      error: 'Nao foi possivel registrar seus dados agora.',
+      diagnostic: 'CLICKUP_CONNECTION_FAILED',
+    });
   }
 }
 

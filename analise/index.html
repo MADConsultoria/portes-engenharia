@@ -186,12 +186,14 @@ class Component extends DCLogic {
           website: '',
         }),
       });
-      if (!response.ok) throw new Error('SUBMIT_FAILED');
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.diagnostic || `HTTP_${response.status}`);
       this.setState({ done: true, submitting: false, submitError: '' });
-    } catch {
+    } catch (error) {
+      const diagnostic = error && error.message ? ` Código: ${error.message}.` : '';
       this.setState({
         submitting: false,
-        submitError: 'Não foi possível enviar agora. Tente novamente em instantes.',
+        submitError: `Não foi possível enviar agora.${diagnostic}`,
       });
     }
   }
