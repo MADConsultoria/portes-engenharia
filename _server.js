@@ -29,7 +29,6 @@ const QUESTIONS = [
 ];
 
 const root = path.resolve(__dirname);
-const basePath = '/viabilidade-estrategica';
 const port = Number(process.env.PORT || 8000);
 const rateLimit = new Map();
 let resolvedClickUpListId = '';
@@ -259,11 +258,7 @@ const server = http.createServer(async (req, res) => {
     return sendJson(res, 400, { ok: false, error: 'URL invalida.' });
   }
 
-  if (reqPath === basePath || reqPath === `${basePath}/`) {
-    reqPath = '/index.html';
-  } else if (reqPath.startsWith(`${basePath}/`)) {
-    reqPath = reqPath.slice(basePath.length);
-  } else if (reqPath === '/') {
+  if (reqPath === '/') {
     reqPath = '/index.html';
   }
 
