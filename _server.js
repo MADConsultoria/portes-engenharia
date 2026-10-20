@@ -94,7 +94,15 @@ function validateLead(data) {
   if (fone.length < 8 || fone.length > 30) return null;
   if (answers.length !== QUESTIONS.length || answers.some((answer) => !answer || answer.length > 180)) return null;
 
-  return { nome, email, fone, answers };
+  const tracking = {};
+  const source = data.tracking && typeof data.tracking === 'object' ? data.tracking : {};
+  for (const key of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid', 'diagnostic_session_id']) {
+    if (typeof source[key] !== 'string') continue;
+    const value = source[key].replace(/[\r\n\u0000-\u001f\u007f]/g, ' ').trim().slice(0, 500);
+    if (key === 'diagnostic_session_id' && !/^[a-zA-Z0-9_-]{1,100}$/.test(value)) continue;
+    if (value) tracking[key] = value;
+  }
+  return { nome, email, fone, answers, tracking };
 }
 
 function buildTaskDescription(lead, req) {
@@ -115,6 +123,7 @@ function buildTaskDescription(lead, req) {
     '## Origem',
     `- **Pagina:** ${referer}`,
     `- **Recebido em:** ${new Date().toISOString()}`,
+    ...Object.entries(lead.tracking || {}).map(([key, value]) => `- **${key}:** ${value}`),
   ].join('\n');
 }
 
@@ -198,6 +207,15 @@ async function createClickUpTask(lead, req) {
     if (category) error.diagnostic += `_${category}`;
     throw error;
   }
+  // Reading optional tracking metadata must never turn a successful creation into an error/retry.
+  try {
+    const task = await response.json();
+    const taskId = String(task.id || '');
+    if (/^[a-zA-Z0-9_-]{1,100}$/.test(taskId)) {
+      return { lead_id: taskId, event_id: `clickup_lead_${taskId}` };
+    }
+  } catch (_) {}
+  return {};
 }
 
 async function handleLead(req, res) {
@@ -217,8 +235,8 @@ async function handleLead(req, res) {
     if (lead && lead.bot) return sendJson(res, 200, { ok: true });
     if (!lead) return sendJson(res, 400, { ok: false, error: 'Confira os dados informados.' });
 
-    await createClickUpTask(lead, req);
-    return sendJson(res, 201, { ok: true });
+    const trackingResult = await createClickUpTask(lead, req);
+    return sendJson(res, 201, { ok: true, ...trackingResult });
   } catch (error) {
     if (error.message === 'PAYLOAD_TOO_LARGE') {
       return sendJson(res, 413, { ok: false, error: 'Dados enviados excedem o limite.' });

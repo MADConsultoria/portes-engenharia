@@ -1,12 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-TD97LTRC');</script>
+<!-- End Google Tag Manager -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Análise de Viabilidade | Portes Engenharia</title>
+<script src="../portes-tracking.js"></script>
 <script src="../support.js"></script>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TD97LTRC" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 <x-dc>
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -202,6 +213,7 @@ class Component extends DCLogic {
     const answers = this.state.answers.slice();
     answers[i] = label;
     this.setState({ answers, draft: [], step: Math.min(QUESTIONS.length, i + 1) });
+    try { window.PortesTracking?.completeStep(this, i); } catch (_) {}
   }
 
   toggleMulti(i, label) {
@@ -221,6 +233,7 @@ class Component extends DCLogic {
     const answers = this.state.answers.slice();
     answers[i] = this.state.draft.join(', ');
     this.setState({ answers, draft: [], step: Math.min(QUESTIONS.length, i + 1) });
+    try { window.PortesTracking?.completeStep(this, i); } catch (_) {}
   }
 
   setAge(value) {
@@ -233,6 +246,7 @@ class Component extends DCLogic {
     const answers = this.state.answers.slice();
     answers[i] = String(this.state.age) + ' anos';
     this.setState({ answers, step: Math.min(QUESTIONS.length, i + 1) });
+    try { window.PortesTracking?.completeStep(this, i); } catch (_) {}
   }
 
   async submitLead() {
@@ -240,6 +254,8 @@ class Component extends DCLogic {
     const ready = s.nome.trim().length > 1 && s.email.includes('@') && s.fone.trim().length > 7;
     if (!ready || s.submitting) return;
 
+    let tracking = {};
+    try { tracking = window.PortesTracking?.leadData(this) || {}; } catch (_) {}
     this.setState({ submitting: true, submitError: '' });
     try {
       const response = await fetch('../api/leads', {
@@ -251,11 +267,13 @@ class Component extends DCLogic {
           fone: s.fone,
           answers: s.answers,
           website: '',
+          tracking,
         }),
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(result.diagnostic || `HTTP_${response.status}`);
       this.setState({ done: true, submitting: false, submitError: '' });
+      try { window.PortesTracking?.leadCreated(this, result, response.status); } catch (_) {}
     } catch (error) {
       const diagnostic = error && error.message ? ` Código: ${error.message}.` : '';
       this.setState({
@@ -356,7 +374,10 @@ class Component extends DCLogic {
         cursor: ready ? 'pointer' : 'not-allowed',
       },
       onSubmit: () => this.submitLead(),
-      onRestart: () => this.setState({ step: 0, answers: [], draft: [], age: 40, done: false, submitting: false, submitError: '' }),
+      onRestart: () => {
+        try { window.PortesTracking?.restart(this); } catch (_) {}
+        this.setState({ step: 0, answers: [], draft: [], age: 40, done: false, submitting: false, submitError: '' });
+      },
       doneA: s.nome ? s.nome.split(' ')[0] + ', sua ' : 'Sua ',
       doneB: ' está a caminho.',
       resumo: [
