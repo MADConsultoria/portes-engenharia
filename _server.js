@@ -11,6 +11,7 @@ const MIME = {
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp',
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon',
 };
@@ -283,6 +284,13 @@ const server = http.createServer(async (req, res) => {
   if (reqPath === '/api/leads') return handleLead(req, res);
   if (!['GET', 'HEAD'].includes(req.method)) {
     res.writeHead(405, { Allow: 'GET, HEAD' });
+    return res.end();
+  }
+
+  // Canonicaliza a pasta para que CSS, imagens e módulos usem a base correta.
+  if (reqPath === '/construidas') {
+    const search = url.parse(req.url).search || '';
+    res.writeHead(308, { Location: '/construidas/' + search });
     return res.end();
   }
 
