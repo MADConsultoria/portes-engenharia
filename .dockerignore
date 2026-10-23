@@ -7,3 +7,6 @@ web
 gen-*.js
 _optimize-images.js
 *.md
+
+# O container recebe apenas a versão já compilada da landing page.
+construidas-src
