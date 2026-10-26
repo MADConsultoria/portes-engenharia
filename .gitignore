@@ -26,3 +26,9 @@ web/
 
 # Frames de origem não usados (site usa apenas seq/build)
 seq/f*.png
+
+# Dependências da landing page; manifestos e build publicado ficam versionados.
+!construidas-src/package.json
+!construidas-src/package-lock.json
+construidas-src/node_modules/
+construidas-src/.vite/

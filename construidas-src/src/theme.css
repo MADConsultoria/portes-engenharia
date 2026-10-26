@@ -1,0 +1,53 @@
+/* Direção aprovada: marrom profundo, tipografia sem serifa e destaques editoriais. */
+:root{background:#381818;color:#f5eee5;--rose:#c69a90;--line:#68433c}
+body{background:#381818;color:#f5eee5}
+h1,h2,h3{font-family:var(--sans);font-weight:600;letter-spacing:-.045em;line-height:1.15}
+em{font-family:var(--serif);font-weight:400;font-style:normal;color:#d5b2a7;letter-spacing:-.035em;font-size:1.16em}
+.brand{font-family:var(--sans);font-weight:400;font-size:25px;letter-spacing:4px;color:#c49b8e}
+.header{background:rgb(56 24 24 / .97);border-bottom-color:#8e7861}
+.header,.hero{background-image:linear-gradient(#ddba9c08 1px,transparent 1px),linear-gradient(90deg,#ddba9c08 1px,transparent 1px);background-size:80px 80px}
+.header nav{color:#f1e6db}.nav-cta{background:#535b30;color:#f5eee5;border-radius:20px}.nav-cta:hover{background:#687141}
+.hero{grid-template-columns:1.1fr 1fr;min-height:740px;padding-top:52px;gap:4vw}
+.hero h1{font-size:clamp(37px,3.65vw,57px);line-height:1.12;margin:24px 0 25px;font-weight:600}
+.hero h1 .hero-highlight{background:#a16a64;color:#fff5e8;padding:0 .11em;box-decoration-break:clone;-webkit-box-decoration-break:clone;line-height:1.18}
+.hero h1 em{color:#f5eee5}.hero-description{font-size:16px;line-height:1.8;color:#e1d2c2;max-width:490px}
+.hero .eyebrow{color:#dcc8be;font-size:10px;letter-spacing:1.6px}.tiny-line{background:#c69a90}
+.button{background:#cbd1ae;color:#394019;font-weight:600;border-radius:30px;font-size:11px}.button:hover{background:#e0e5ca}
+.micro{color:#e1d2c2}.status-dot{background:#cbd1ae}.scroll-cue,.portrait-side{color:#bd9690}
+.portrait-frame{height:590px;border-radius:65px 150px 8px 65px;background:#5a3b35}
+.portrait-frame img{object-position:35% 38%}
+.hero-portrait:before{border-radius:75px 160px 8px 75px;border-color:#8e645b}
+.hero-portrait figcaption{background:#402320;color:#f3e9dd;border:1px solid #a16a6455}
+.portrait-name{font-family:var(--sans);font-size:23px;font-weight:500;letter-spacing:-.03em}
+.portrait-role{color:#d4bcb1}.blueprint{opacity:.08;color:#e1d2c2}
+.event-strip{background:#2e1715}.event-strip b{font-family:var(--sans);font-size:23px;font-weight:500}
+.recognition{background:#35201d}.eyebrow,.step-label{color:#d0aaa0}
+.recognition h2{font-size:clamp(34px,3.3vw,49px)}
+.recognition-copy>p:last-child{color:#e1d2c2}
+.quotes blockquote{font-family:var(--sans);font-size:17px;font-weight:400;line-height:1.65;color:#e1d2c2;padding-top:23px;padding-bottom:23px}
+.reassurance{font-family:var(--sans);font-size:24px;line-height:1.4}
+.desire{background:#452621;grid-template-columns:1.1fr 1fr;column-gap:7vw;row-gap:45px}
+.desire h2{font-size:46px}.desire p:not(.eyebrow):not(.desire-statement){color:#e1d2c2;max-width:450px}
+.desire-statement{font-family:var(--sans);font-weight:500;font-size:40px;line-height:1.2;border-color:#8e645b}
+.event-vision{grid-column:1/-1;position:relative;margin-top:8px}
+.event-vision img{width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:70px 8px 8px 8px}
+.event-vision figcaption{display:flex;justify-content:space-between;gap:20px;padding:17px 0 0;font-size:11px;line-height:1.7;color:#d9c4b6}
+.event-vision figcaption span:last-child{font-size:9px;letter-spacing:.5px;color:#c6aaa0}
+.journey-intro,.journey{background:#381818}.journey-intro h2{font-size:clamp(34px,3.7vw,54px)}
+.intro-bottom p,.step-description{color:#e1d2c2}.journey-hint{color:#c4a198}
+.model-sticky{color:#352623}.model-bottom>span:nth-child(2){font-family:var(--sans);font-size:23px;font-weight:500}
+.step h3{font-size:clamp(32px,3.1vw,46px);line-height:1.15}
+.step-number{font-family:var(--sans);font-size:33px;font-weight:400;color:#bd9690}
+.speaker-mark{font-family:var(--sans);font-size:17px;color:#e1d2c2;border-color:#a16a64}
+.speaker-theme{color:#d0aaa0}.step-metaphor{font-family:var(--sans);font-size:16px;font-style:normal;color:#d0aaa0;line-height:1.65}
+.complete{background:#281715}.complete h2{font-size:clamp(34px,3.7vw,54px)}.complete em{color:#d5b2a7}
+.invite{background:#452621}.invite h2{font-size:clamp(34px,3.5vw,50px)}
+.invite-date{font-family:var(--sans);font-size:27px;font-weight:500}.invite-details{border-color:#8e645b}dt{color:#d0aaa0}
+dd.price{font-family:var(--sans);font-size:34px}.prototype-note{color:#d2b7aa}.invite-details .prototype-note{color:#d2b7aa}
+footer{background:#2e1715}footer p{font-family:var(--sans);font-size:13px;font-style:normal;color:#d0aaa0}footer>span{color:#c5a397}
+dialog{background:#452621;color:#f5eee5;border-color:#8e645b}dialog h2{font-size:34px}.close-dialog{color:#f5eee5}
+@media(min-width:1600px){.portrait-frame{height:660px}.hero{min-height:820px}}
+@media(min-width:761px) and (max-width:1100px){.hero h1{font-size:clamp(30px,3.65vw,40px)}.portrait-frame{height:560px}.hero-description{font-size:14px}.header nav{gap:20px}.brand{font-size:22px}.recognition h2{font-size:34px}.reassurance{font-size:22px}.desire h2{font-size:38px}.desire-statement{font-size:34px}.step h3{font-size:32px}.model-bottom>span:nth-child(2){font-size:20px}}
+@media(max-width:760px){.hero{grid-template-columns:1fr;min-height:0;padding-top:36px;gap:36px}.hero h1{font-size:clamp(31px,7.8vw,49px);line-height:1.15;margin:23px 0}.hero .eyebrow{font-size:7px;letter-spacing:1.2px}.hero-description{font-size:14px}.brand{font-size:18px;letter-spacing:2px}.header{padding-left:18px;padding-right:18px}.portrait-frame{height:460px;border-radius:40px 100px 5px 40px}.hero-portrait:before{border-radius:50px 110px 5px 50px}.portrait-frame img{object-position:35% 38%}.portrait-name{font-size:22px}.hero-portrait figcaption{min-width:200px}.event-strip b{font-size:21px}.recognition h2{font-size:34px}.quotes blockquote{font-size:16px}.reassurance{font-size:21px}.desire{grid-template-columns:1fr;gap:30px}.desire h2{font-size:36px}.desire-statement{font-size:34px}.event-vision{margin-top:8px}.event-vision img{aspect-ratio:4/3;border-radius:35px 5px 5px 5px;object-position:50% 40%}.event-vision figcaption{flex-direction:column;gap:8px;font-size:11px}.event-vision figcaption span:last-child{font-size:9px}.journey-intro h2{font-size:34px}.step h3{font-size:32px}.step-number{font-size:28px}.step-metaphor{font-size:15px}.model-bottom>span:nth-child(2){font-size:18px}.complete h2{font-size:33px}.invite h2{font-size:34px}.invite-date{font-size:25px}.invite-details dd.price{font-size:34px}footer .brand{font-size:19px}footer p{font-size:13px}dialog h2{font-size:29px}}
+
+.return-site{font-family:var(--sans);font-size:11px;color:#e1d2c2;letter-spacing:0;line-height:1.6}.return-site:hover{color:#cbd1ae}footer .return-site{font-size:12px}
