@@ -95,6 +95,19 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   }
 
 
+  /* Navegação entre a página institucional e o encontro Construa-se. */
+  .construidas-link { display:inline-flex; align-items:center; justify-content:center; gap:9px; padding:11px 17px; border:1px solid rgba(33,110,88,.35); border-radius:999px; color:#216E58; background:rgba(244,248,247,.9); font-family:Poppins,sans-serif; font-size:12px; font-weight:500; white-space:nowrap; transition:background .2s,color .2s; }
+  .construidas-link:hover { background:#216E58; color:#F4F8F7; }
+  .construidas-link:focus-visible { outline:2px solid #216E58; outline-offset:4px; }
+  @media(max-width:1100px) { .phase-label { display:none!important; } .header-actions { gap:12px!important; } }
+  @media(max-width:760px) {
+    .site-header { gap:8px!important; }
+    .site-logo { width:78px!important; height:auto!important; max-height:29px; object-fit:contain; }
+    .header-actions { gap:6px!important; }
+    .construidas-link { gap:4px; padding:10px 8px; font-size:10px; min-height:38px; }
+    .header-cta { max-width:130px; padding:10px!important; font-size:8px!important; min-height:38px; display:inline-flex; align-items:center; justify-content:center; }
+  }
+
 </style>
 </helmet>
 <div class="site-shell" style="position:relative; background:#F4F8F7; font-family:Poppins,system-ui,sans-serif; color:#12312F; overflow-x:hidden;">
@@ -108,6 +121,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <img class="site-logo" src="brand/logo-portes.png" alt="Portes Engenharia" style="height:38px; width:auto; display:block;" />
     <div class="header-actions" style="display:flex; align-items:center; gap:22px;">
       <span class="phase-label" style="font-family:Poppins,sans-serif; font-size:10px; letter-spacing:0.16em; color:#5F6E6B;">{{ phaseLabel }}</span>
+      <a class="construidas-link" href="construidas/">Construa-se <span aria-hidden="true">↗</span></a>
       <a class="header-cta" href="analise/" data-portes-cta="cta_01" data-portes-position="1" data-portes-location="header" style="font-family:Poppins,sans-serif; font-size:11px; letter-spacing:0.13em; font-weight:500; color:#F4F8F7; background:#216E58; padding:12px 20px; border-radius:999px; white-space:nowrap;"><span class="desktop-label">FAZER MINHA VIABILIDADE ESTRATÉGICA</span><span class="mobile-label">FAZER VIABILIDADE</span></a>
     </div>
   </header>

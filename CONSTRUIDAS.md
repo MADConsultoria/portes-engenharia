@@ -1,6 +1,6 @@
-# Integração da landing page Construídas
+# Integração da landing page Construa-se
 
-A navegação superior da página principal inclui o botão Construídas, com destino relativo `construidas/`. A landing page tem links de retorno para a página principal.
+A landing page Construa-se está no caminho `construidas/` e tem links de retorno para a página principal. O botão Construa-se no cabeçalho da home foi reinserido por solicitação do responsável pelo projeto, preservando os outros ajustes da página principal.
 
 ## Estrutura
 
@@ -30,7 +30,7 @@ node tests/construidas-integration.cjs
 node _server.js
 ```
 
-O servidor usa a porta 8000 por padrão. Abra `http://localhost:8000/` e clique em Construídas. A versão integrada está em `http://localhost:8000/construidas/`. Acesso sem barra final redireciona para a pasta, preservando parâmetros de campanha.
+O servidor usa a porta 8000 por padrão. Abra `http://localhost:8000/` para conferir a página principal. A versão integrada está em `http://localhost:8000/construidas/`. Acesso sem barra final redireciona para a pasta, preservando parâmetros de campanha.
 
 ## Publicar pelo Dokploy
 
@@ -43,3 +43,11 @@ Antes de publicar, conferir repositório, branch e deploy automático da aplica�
 Este é o protótipo visual aprovado para integração: hero, identificação, desejo com cena conceitual do encontro, percurso 3D das cinco especialistas e convite. O ingresso ainda não está habilitado e o botão informa que se trata de prévia. Checkout, fotos das especialistas, demais blocos do roteiro e página de obrigado precisam ser concluídos antes da divulgação final.
 
 A fotografia da abertura é a imagem real fornecida de Joyce. A cena do encontro é gerada com IA e identificada como visualização conceitual. Montserrat é a tipografia base e Cormorant Garamond é a substituição temporária nos destaques serifados. O `noindex` da LP permanece até a publicação final aprovada. A integração não ativa rastreadores adicionais nem reutiliza automaticamente os eventos de conversão do formulário de viabilidade.
+
+
+## Atualização local de 26 de outubro
+
+A cópia local foi atualizada a partir da main, incluindo os ajustes da home e a remoção do botão no cabeçalho. O nome exibido na LP foi alterado para Construa-se. Os nomes das pastas e o caminho /construidas/ foram preservados para manter os links existentes.
+
+
+O nome Construa-se e o botão de navegação foram aprovados para publicação em 26 de outubro. O caminho /construidas/ foi mantido.
