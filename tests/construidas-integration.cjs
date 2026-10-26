@@ -21,7 +21,7 @@ function request(url,method='GET') {
 async function run(){
   const home=await request('/');
   assert.equal(home.status,200);
-  assert.match(home.body,/<a class="construidas-link" href="construidas\/">Construídas/);
+  assert.doesNotMatch(home.body,/<a\b[^>]*href="construidas\/"/);
   assert.match(home.body,/class="header-cta" href="analise\/"/);
   assert.equal((await request('/analise/')).status,200);
   const redirect=await request('/construidas?utm_source=teste');
