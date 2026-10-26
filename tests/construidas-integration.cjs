@@ -21,7 +21,7 @@ function request(url,method='GET') {
 async function run(){
   const home=await request('/');
   assert.equal(home.status,200);
-  assert.match(home.body,/<a class="construidas-link" href="construidas\/">Construa-se/);
+  assert.doesNotMatch(home.body,/<a\b[^>]*href="construidas\/"/);
   assert.match(home.body,/class="header-cta" href="analise\/"/);
   assert.equal((await request('/analise/')).status,200);
   const redirect=await request('/construidas?utm_source=teste');
@@ -32,7 +32,7 @@ async function run(){
   assert.equal(lp.status,200);
   assert.match(lp.body,/<title>Construa-se/);
   assert.match(lp.headers['Content-Type'],/text\/html/);
-  assert.match(lp.body,/href="\.\.\/"/);
+  assert.doesNotMatch(lp.body,/href="\.\.\/"/);
   assert(!lp.body.includes('src="/images/'));
   assert(!lp.body.includes('/src/main.js'));
   for(const match of lp.body.matchAll(/(?:src|href)="\.\/([^"]+)"/g)){

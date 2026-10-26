@@ -1,6 +1,6 @@
 # Integração da landing page Construa-se
 
-A landing page Construa-se está no caminho `construidas/` e tem links de retorno para a página principal. O botão Construa-se no cabeçalho da home foi reinserido por solicitação do responsável pelo projeto, preservando os outros ajustes da página principal.
+A landing page Construa-se está no caminho `construidas/`. Por solicitação do responsável pelo projeto, as páginas não possuem botões ou links de navegação entre si, preservando o tráfego de cada campanha.
 
 ## Estrutura
 
@@ -51,3 +51,8 @@ A cópia local foi atualizada a partir da main, incluindo os ajustes da home e a
 
 
 O nome Construa-se e o botão de navegação foram aprovados para publicação em 26 de outubro. O caminho /construidas/ foi mantido.
+
+
+## Separação das campanhas
+
+Removidos o botão Construa-se da home e os links de retorno à Portes Engenharia no cabeçalho e no rodapé da LP. Os links internos e os botões de inscrição continuam no fluxo do evento.
