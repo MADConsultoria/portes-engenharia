@@ -131,3 +131,12 @@ dialog{background:#452621;color:#f5eee5;border-color:#8e645b}dialog h2{font-size
   .speaker-portrait img{height:120px}.speaker-profile{row-gap:10px}.step-top{margin-bottom:10px}
   .journey .step,.journey .step:last-child{padding:12px}.step-description{line-height:1.5}
 }
+
+/* A única fonte de progresso é a página; os cards apenas exibem o resultado. */
+.cards-track{display:contents}
+@media(max-width:760px){
+  .journey .steps{display:block;overflow:hidden;scroll-snap-type:none;overscroll-behavior:auto;touch-action:pan-y pinch-zoom}
+  .cards-track{display:flex;align-items:stretch;gap:12px;width:100%;transform:translate3d(var(--card-shift,0px),0,0);transition:transform .32s cubic-bezier(.2,.7,.2,1)}
+  .journey .step{scroll-snap-align:none}
+}
+@media(prefers-reduced-motion:reduce){.cards-track{transition:none}}

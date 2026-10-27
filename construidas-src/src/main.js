@@ -19,6 +19,10 @@ document.querySelector('#steps').innerHTML = stages.map((s,i) => `
   </article>`).join('');
 
 const cards = document.querySelector('#steps');
+const cardsTrack = document.createElement('div');
+cardsTrack.className = 'cards-track';
+while (cards.firstChild) cardsTrack.append(cards.firstChild);
+cards.append(cardsTrack);
 cards.setAttribute('tabindex', '0');
 cards.setAttribute('aria-label', 'Especialistas do encontro');
 cards.insertAdjacentHTML('afterend', `<div class="cards-controls">
@@ -52,7 +56,7 @@ const stepEls = [...document.querySelectorAll('.step')];
 const stageLinks = [...document.querySelectorAll('.stage-nav a')];
 const viewport = document.querySelector('.model-viewport');
 const toggle = document.querySelector('.motion-toggle');
-let mobileStride = 500, mobileTop = 72;
+let mobileStride = 500, mobileTop = 72, layoutWidth = 0, layoutHeight = 0;
 let scene, progress = 0, active = -1, paused = reducedMotion.matches, scrollPending = false;
 function syncMotionLabel() {
   toggle.setAttribute('aria-pressed', String(paused));
@@ -66,10 +70,7 @@ function updateScroll() {
     const start = journey.getBoundingClientRect().top + scrollY - mobileTop;
     index = Math.min(stages.length - 1, Math.max(0, Math.floor((scrollY - start) / mobileStride)));
     progress = Math.min(4.999, index + .9);
-    const left = stepEls[index].offsetLeft - stepEls[0].offsetLeft;
-    if (active !== index || Math.abs(cards.scrollLeft - left) > cards.clientWidth) {
-      cards.scrollTo({ left, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
-    }
+    cardsTrack.style.setProperty('--card-shift', `${-index * (cards.getBoundingClientRect().width + 12)}px`);
   } else {
     const readingLine = innerHeight * .52;
     for (let i = 0; i < stepEls.length; i++) if (stepEls[i].getBoundingClientRect().top <= readingLine) index = i;
@@ -93,8 +94,14 @@ function queueScroll() { if(!scrollPending){ scrollPending = true; requestAnimat
 addEventListener('scroll', queueScroll, { passive: true });
 function measureJourney() {
   if (mobileCards.matches) {
-    mobileStride = Math.max(300, innerHeight * .65);
-    mobileTop = Math.min(72, innerHeight - journeyPanel.offsetHeight - 8);
+    // Safari changes innerHeight as its address bar opens/closes during a gesture.
+    // Keep the sequence geometry stable unless the viewport really changes size.
+    if (layoutWidth !== innerWidth || Math.abs(innerHeight - layoutHeight) > 160) {
+      layoutWidth = innerWidth;
+      layoutHeight = innerHeight;
+    }
+    mobileStride = Math.max(300, layoutHeight * .65);
+    mobileTop = Math.min(72, layoutHeight - journeyPanel.offsetHeight - 8);
     journeyPanel.style.setProperty('--journey-top', `${mobileTop}px`);
     journey.style.height = `${journeyPanel.offsetHeight + mobileStride * stages.length}px`;
   } else journey.style.removeProperty('height');
@@ -103,16 +110,20 @@ function measureJourney() {
 }
 addEventListener('resize', measureJourney);
 new ResizeObserver(measureJourney).observe(journeyPanel);
-let cardScrollTimer;
-cards.addEventListener('scroll', () => {
-  if (!mobileCards.matches) return;
-  clearTimeout(cardScrollTimer);
-  cardScrollTimer = setTimeout(() => {
-    const width = stepEls[0].getBoundingClientRect().width + 12;
-    const index = Math.round(cards.scrollLeft / width);
-    if (index !== active) selectCard(index, false);
-  }, 160);
-}, { passive: true });
+// Only an intentional horizontal pointer gesture may reposition the page.
+// Rendering a card never emits a navigation command back into the scroll source.
+let cardPointer;
+cards.addEventListener('pointerdown', e => {
+  if (!mobileCards.matches || !e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0)) return;
+  cardPointer = { id: e.pointerId, x: e.clientX, y: e.clientY };
+});
+cards.addEventListener('pointercancel', () => { cardPointer = undefined; });
+cards.addEventListener('pointerup', e => {
+  if (!cardPointer || cardPointer.id !== e.pointerId) return;
+  const dx = e.clientX - cardPointer.x, dy = e.clientY - cardPointer.y;
+  cardPointer = undefined;
+  if (Math.abs(dx) >= 35 && Math.abs(dx) > Math.abs(dy) * 1.4) selectCard(active + (dx < 0 ? 1 : -1), false);
+});
 function selectCard(index, smooth = true) {
   const target = Math.min(stages.length - 1, Math.max(0, index));
   if (!mobileCards.matches) return;
