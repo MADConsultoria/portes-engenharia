@@ -18,6 +18,16 @@ document.querySelector('#steps').innerHTML = stages.map((s,i) => `
     <p class="step-metaphor">${s.metaphor}</p>
   </article>`).join('');
 
+const cards = document.querySelector('#steps');
+cards.setAttribute('tabindex', '0');
+cards.setAttribute('aria-label', 'Especialistas do encontro');
+cards.insertAdjacentHTML('afterend', `<div class="cards-controls">
+  <button type="button" class="card-previous" aria-label="Especialista anterior" aria-controls="steps"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
+  <p class="cards-status" aria-live="polite" aria-atomic="true">1 de 5</p>
+  <button type="button" class="card-next" aria-label="Próxima especialista" aria-controls="steps"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m10 6 6 6-6 6"/></svg></button>
+  <p class="cards-hint">Deslize para conhecer cada especialista</p>
+</div>`);
+const mobileCards = matchMedia('(max-width: 760px)');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const revealObserver = new IntersectionObserver(entries => entries.forEach(entry => {
   if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObserver.unobserve(entry.target); }
@@ -45,13 +55,22 @@ function syncMotionLabel() {
 syncMotionLabel();
 function updateScroll() {
   scrollPending = false;
-  const mobile = innerWidth <= 760;
-  const readingLine = mobile ? 400 : innerHeight * .52;
   let index = 0;
-  for (let i = 0; i < stepEls.length; i++) if (stepEls[i].getBoundingClientRect().top <= readingLine) index = i;
-  const rect = stepEls[index].getBoundingClientRect();
-  const local = Math.min(1,Math.max(0,(readingLine - rect.top) / rect.height));
-  progress = Math.min(4.999, index + local);
+  if (mobileCards.matches) {
+    const width = stepEls[0].getBoundingClientRect().width + 12;
+    const position = Math.min(4, Math.max(0, cards.scrollLeft / width));
+    index = Math.round(position);
+    progress = Math.min(4.999, position + .9);
+  } else {
+    const readingLine = innerHeight * .52;
+    for (let i = 0; i < stepEls.length; i++) if (stepEls[i].getBoundingClientRect().top <= readingLine) index = i;
+    const rect = stepEls[index].getBoundingClientRect();
+    const local = Math.min(1, Math.max(0, (readingLine - rect.top) / rect.height));
+    progress = Math.min(4.999, index + local);
+  }
+  document.querySelector('.cards-status').textContent = `${index + 1} de ${stages.length}`;
+  document.querySelector('.card-previous').disabled = index === 0;
+  document.querySelector('.card-next').disabled = index === stages.length - 1;
   if (active !== index) {
     active = index;
     document.querySelector('#model-number').textContent = `${stages[index].number} / 05`;
@@ -64,6 +83,32 @@ function updateScroll() {
 function queueScroll() { if(!scrollPending){ scrollPending = true; requestAnimationFrame(updateScroll); } }
 addEventListener('scroll', queueScroll, { passive: true });
 addEventListener('resize', queueScroll);
+cards.addEventListener('scroll', queueScroll, { passive: true });
+function selectCard(index) {
+  const target = Math.min(stages.length - 1, Math.max(0, index));
+  const left = stepEls[target].offsetLeft - stepEls[0].offsetLeft;
+  cards.scrollTo({ left, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+}
+document.querySelector('.card-previous').addEventListener('click', () => selectCard(active - 1));
+document.querySelector('.card-next').addEventListener('click', () => selectCard(active + 1));
+cards.addEventListener('keydown', e => {
+  if (!mobileCards.matches || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+  e.preventDefault();
+  selectCard(e.key === 'Home' ? 0 : e.key === 'End' ? stages.length - 1 : active + (e.key === 'ArrowRight' ? 1 : -1));
+});
+stageLinks.forEach((link, i) => link.addEventListener('click', e => {
+  if (!mobileCards.matches) return;
+  e.preventDefault();
+  selectCard(i);
+}));
+mobileCards.addEventListener('change', () => {
+  if (mobileCards.matches) selectCard(Math.max(active, 0));
+  queueScroll();
+});
+if (mobileCards.matches && /^#etapa-[1-5]$/.test(location.hash)) {
+  selectCard(Number(location.hash.slice(-1)) - 1);
+}
+
 toggle.addEventListener('click', () => { paused = !paused; syncMotionLabel(); scene?.setPaused(paused); updateScroll(); });
 reducedMotion.addEventListener('change', e => { paused = e.matches; if(e.matches) document.documentElement.classList.remove('js-motion'); syncMotionLabel(); scene?.setPaused(paused); updateScroll(); });
 updateScroll();
