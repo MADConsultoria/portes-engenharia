@@ -2,7 +2,21 @@ import './style.css';
 import './theme.css';
 import { stages, event } from './content.js';
 
-document.querySelector('#steps').innerHTML = stages.map((s,i) => `<article class="step" id="etapa-${i+1}" aria-labelledby="title-${i}"><div class="step-top"><span class="step-number">${s.number}</span><span class="step-label">${s.label}</span></div><h3 id="title-${i}">${s.title}</h3><div class="speaker"><span class="speaker-mark" aria-hidden="true">${s.mark}</span><div><p class="speaker-name">${s.name}</p><p class="speaker-theme">${s.theme}</p></div></div><p class="step-description">${s.description}</p><p class="step-metaphor">${s.metaphor}</p></article>`).join('');
+document.querySelector('#steps').innerHTML = stages.map((s,i) => `
+  <article class="step" id="etapa-${i+1}" aria-labelledby="speaker-${i}">
+    <div class="step-top"><span class="step-number">${s.number}</span><span class="step-label">${s.label}</span></div>
+    <div class="speaker-profile">
+      <figure class="speaker-portrait"><img src="./images/${s.photo}" width="${s.photoWidth}" height="${s.photoHeight}" alt="Retrato de ${s.name}" loading="lazy" decoding="async"></figure>
+      <div class="speaker-copy">
+        <p class="speaker-kicker">Especialista convidada</p>
+        <h3 class="speaker-name" id="speaker-${i}">${s.name}</h3>
+        <p class="speaker-theme">${s.theme}</p>
+        <p class="speaker-message">${s.title.replaceAll('<br>', ' ')}</p>
+        <p class="step-description">${s.description}</p>
+      </div>
+    </div>
+    <p class="step-metaphor">${s.metaphor}</p>
+  </article>`).join('');
 
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const revealObserver = new IntersectionObserver(entries => entries.forEach(entry => {

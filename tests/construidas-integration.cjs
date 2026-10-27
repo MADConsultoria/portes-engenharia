@@ -48,6 +48,12 @@ async function run(){
       assert.equal((await request('/construidas/assets/'+match[1])).status,200);
     }
   }
+  const { stages } = await import('../construidas-src/src/content.js');
+  for (const stage of stages) {
+    const portrait=await request('/construidas/images/'+stage.photo);
+    assert.equal(portrait.status,200,'Retrato ausente: '+stage.name);
+    assert.match(portrait.headers['Content-Type'],/image\/webp/);
+  }
   const head=await request('/construidas/','HEAD');
   assert.equal(head.status,200);assert.equal(head.body,'');
   assert.equal((await request('/construidas/arquivo-inexistente.js')).status,404);

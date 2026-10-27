@@ -50,3 +50,36 @@ dialog{background:#452621;color:#f5eee5;border-color:#8e645b}dialog h2{font-size
 @media(min-width:761px) and (max-width:1100px){.hero h1{font-size:clamp(30px,3.65vw,40px)}.portrait-frame{height:560px}.hero-description{font-size:14px}.header nav{gap:20px}.brand{font-size:22px}.recognition h2{font-size:34px}.reassurance{font-size:22px}.desire h2{font-size:38px}.desire-statement{font-size:34px}.step h3{font-size:32px}.model-bottom>span:nth-child(2){font-size:20px}}
 @media(max-width:760px){.hero{grid-template-columns:1fr;min-height:0;padding-top:36px;gap:36px}.hero h1{font-size:clamp(31px,7.8vw,49px);line-height:1.15;margin:23px 0}.hero .eyebrow{font-size:7px;letter-spacing:1.2px}.hero-description{font-size:14px}.brand{font-size:18px;letter-spacing:2px}.header{padding-left:18px;padding-right:18px}.portrait-frame{height:460px;border-radius:40px 100px 5px 40px}.hero-portrait:before{border-radius:50px 110px 5px 50px}.portrait-frame img{object-position:35% 38%}.portrait-name{font-size:22px}.hero-portrait figcaption{min-width:200px}.event-strip b{font-size:21px}.recognition h2{font-size:34px}.quotes blockquote{font-size:16px}.reassurance{font-size:21px}.desire{grid-template-columns:1fr;gap:30px}.desire h2{font-size:36px}.desire-statement{font-size:34px}.event-vision{margin-top:8px}.event-vision img{aspect-ratio:4/3;border-radius:35px 5px 5px 5px;object-position:50% 40%}.event-vision figcaption{flex-direction:column;gap:8px;font-size:11px}.event-vision figcaption span:last-child{font-size:9px}.journey-intro h2{font-size:34px}.step h3{font-size:32px}.step-number{font-size:28px}.step-metaphor{font-size:15px}.model-bottom>span:nth-child(2){font-size:18px}.complete h2{font-size:33px}.invite h2{font-size:34px}.invite-date{font-size:25px}.invite-details dd.price{font-size:34px}footer .brand{font-size:19px}footer p{font-size:13px}dialog h2{font-size:29px}}
 
+
+/* Retratos e vozes das especialistas no primeiro plano da jornada. */
+.journey{grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);gap:4vw}
+.model-sticky{height:min(540px,calc(100svh - 140px));min-height:360px;border-radius:130px 130px 3px 3px}
+.step{min-height:82svh;padding:54px 0;scroll-margin-top:115px}
+.step-top{margin-bottom:25px}.step-label{font-size:11px;letter-spacing:2px}
+.speaker-profile{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1fr);gap:26px;align-items:start}
+.speaker-portrait{position:relative;overflow:hidden;border:1px solid #a16a6470;border-radius:65px 6px 6px 6px;background:#452621;box-shadow:0 18px 42px #1d0b0b35}
+.speaker-portrait img{width:100%;height:auto;aspect-ratio:3/4;object-fit:cover;object-position:center 25%}
+.speaker-copy{min-width:0;padding-top:9px}
+.speaker-kicker{font-size:9px;text-transform:uppercase;letter-spacing:1.8px;color:#d0aaa0;line-height:1.7;margin-bottom:12px}
+.step .speaker-name{font-family:var(--sans);font-size:clamp(27px,2.2vw,35px);font-weight:600;line-height:1.16;letter-spacing:-.04em;margin-bottom:15px;overflow-wrap:normal}
+.speaker-theme{font-size:18px;font-weight:500;line-height:1.55;color:#f5eee5;margin:0 0 25px}
+.speaker-message{font-size:24px;font-weight:500;letter-spacing:-.025em;line-height:1.25;margin-bottom:18px}
+.speaker-message br{display:none}.speaker-message em{font-size:1.12em}
+.step-description{font-size:16px;line-height:1.8;max-width:none}
+.step-metaphor{max-width:none;font-size:16px;margin-top:28px;padding:3px 0 3px 18px}
+@media(min-width:761px) and (max-width:1150px){
+  .journey{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)}
+  .model-sticky{height:440px;min-height:0;border-radius:100px 100px 3px 3px}
+  .speaker-profile{grid-template-columns:1fr;gap:24px}
+  .speaker-portrait{width:min(100%,340px)}.speaker-copy{padding:0}
+  .step .speaker-name{font-size:32px}.speaker-message{font-size:26px}
+}
+@media(max-width:760px){
+  .journey{display:block}.model-sticky{height:235px;min-height:0;border-radius:55px 55px 3px 3px}
+  .step{min-height:0;padding:42px 5px 48px;scroll-margin-top:320px}
+  .speaker-profile{grid-template-columns:1fr;gap:26px}.speaker-portrait{width:100%;max-width:440px;border-radius:55px 6px 6px 6px}
+  .speaker-portrait img{aspect-ratio:4/5}.speaker-copy{padding:0}
+  .step .speaker-name{font-size:32px;margin-bottom:14px}.speaker-kicker{font-size:10px}
+  .speaker-theme{font-size:19px;margin-bottom:24px}.speaker-message{font-size:27px}
+  .step-description,.step-metaphor{font-size:16px}.step-label{font-size:10px}
+}
