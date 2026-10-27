@@ -100,6 +100,12 @@ function measureJourney() {
       layoutWidth = innerWidth;
       layoutHeight = innerHeight;
     }
+    // Allocate the remaining safe viewport space to the model after measuring
+    // the actual card copy. Font size and speaker names may change its height.
+    const modelCard = document.querySelector('.model-sticky');
+    const contentHeight = journeyPanel.offsetHeight - modelCard.offsetHeight;
+    const modelHeight = Math.round(Math.max(120, Math.min(300, layoutHeight - 72 - contentHeight - 24)));
+    journeyPanel.style.setProperty('--mobile-model-height', `${modelHeight}px`);
     mobileStride = Math.max(300, layoutHeight * .65);
     mobileTop = Math.min(72, layoutHeight - journeyPanel.offsetHeight - 8);
     journeyPanel.style.setProperty('--journey-top', `${mobileTop}px`);
