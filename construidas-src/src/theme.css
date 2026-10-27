@@ -111,3 +111,23 @@ dialog{background:#452621;color:#f5eee5;border-color:#8e645b}dialog h2{font-size
   .cards-hint{grid-column:1/-1;text-align:center;font-size:11px;color:#d0aaa0}
 }
 @media(max-width:360px){.step .speaker-name{font-size:20px}.speaker-theme{font-size:13px}.speaker-portrait img{height:155px}}
+
+/* A rolagem vertical percorre as cinco vozes antes de liberar a próxima seção. */
+.journey-panel{display:contents}
+@media(max-width:760px){
+  .journey{padding-bottom:0}
+  .journey-panel{display:block;position:sticky;top:var(--journey-top,72px);padding:8px 0 14px;background:#381818}
+  .journey .model-sticky{height:170px;margin-bottom:12px;border-radius:38px 38px 3px 3px}
+  .model-top{top:8px}.model-bottom{padding-bottom:3px}.stage-nav{padding-top:0;padding-bottom:0}
+  .journey .step,.journey .step:last-child{padding:16px 14px 18px}
+  .step-top{margin-bottom:14px}.speaker-profile{row-gap:14px}
+  .speaker-portrait img{height:140px}
+  .speaker-message{display:none}
+  .step-description{font-size:14px;line-height:1.65}
+  .cards-controls{margin-top:8px;gap:4px}.cards-hint{font-size:10px;line-height:1.5}
+}
+@media(max-width:760px) and (max-height:700px){
+  .journey .model-sticky{height:135px}.scene-axis,.scene-caption{display:none}
+  .speaker-portrait img{height:120px}.speaker-profile{row-gap:10px}.step-top{margin-bottom:10px}
+  .journey .step,.journey .step:last-child{padding:12px}.step-description{line-height:1.5}
+}

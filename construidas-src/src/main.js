@@ -27,6 +27,11 @@ cards.insertAdjacentHTML('afterend', `<div class="cards-controls">
   <button type="button" class="card-next" aria-label="Próxima especialista" aria-controls="steps"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m10 6 6 6-6 6"/></svg></button>
   <p class="cards-hint">Deslize para conhecer cada especialista</p>
 </div>`);
+const journey = document.querySelector('.journey');
+const journeyPanel = document.createElement('div');
+journeyPanel.className = 'journey-panel';
+while (journey.firstChild) journeyPanel.append(journey.firstChild);
+journey.append(journeyPanel);
 const mobileCards = matchMedia('(max-width: 760px)');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const revealObserver = new IntersectionObserver(entries => entries.forEach(entry => {
@@ -47,6 +52,7 @@ const stepEls = [...document.querySelectorAll('.step')];
 const stageLinks = [...document.querySelectorAll('.stage-nav a')];
 const viewport = document.querySelector('.model-viewport');
 const toggle = document.querySelector('.motion-toggle');
+let mobileStride = 500, mobileTop = 72;
 let scene, progress = 0, active = -1, paused = reducedMotion.matches, scrollPending = false;
 function syncMotionLabel() {
   toggle.setAttribute('aria-pressed', String(paused));
@@ -57,10 +63,13 @@ function updateScroll() {
   scrollPending = false;
   let index = 0;
   if (mobileCards.matches) {
-    const width = stepEls[0].getBoundingClientRect().width + 12;
-    const position = Math.min(4, Math.max(0, cards.scrollLeft / width));
-    index = Math.round(position);
-    progress = Math.min(4.999, position + .9);
+    const start = journey.getBoundingClientRect().top + scrollY - mobileTop;
+    index = Math.min(stages.length - 1, Math.max(0, Math.floor((scrollY - start) / mobileStride)));
+    progress = Math.min(4.999, index + .9);
+    const left = stepEls[index].offsetLeft - stepEls[0].offsetLeft;
+    if (active !== index || Math.abs(cards.scrollLeft - left) > cards.clientWidth) {
+      cards.scrollTo({ left, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+    }
   } else {
     const readingLine = innerHeight * .52;
     for (let i = 0; i < stepEls.length; i++) if (stepEls[i].getBoundingClientRect().top <= readingLine) index = i;
@@ -82,12 +91,34 @@ function updateScroll() {
 }
 function queueScroll() { if(!scrollPending){ scrollPending = true; requestAnimationFrame(updateScroll); } }
 addEventListener('scroll', queueScroll, { passive: true });
-addEventListener('resize', queueScroll);
-cards.addEventListener('scroll', queueScroll, { passive: true });
-function selectCard(index) {
+function measureJourney() {
+  if (mobileCards.matches) {
+    mobileStride = Math.max(300, innerHeight * .65);
+    mobileTop = Math.min(72, innerHeight - journeyPanel.offsetHeight - 8);
+    journeyPanel.style.setProperty('--journey-top', `${mobileTop}px`);
+    journey.style.height = `${journeyPanel.offsetHeight + mobileStride * stages.length}px`;
+  } else journey.style.removeProperty('height');
+  document.querySelector('.cards-hint').textContent = 'Role para baixo ou deslize para conhecer todas';
+  queueScroll();
+}
+addEventListener('resize', measureJourney);
+new ResizeObserver(measureJourney).observe(journeyPanel);
+let cardScrollTimer;
+cards.addEventListener('scroll', () => {
+  if (!mobileCards.matches) return;
+  clearTimeout(cardScrollTimer);
+  cardScrollTimer = setTimeout(() => {
+    const width = stepEls[0].getBoundingClientRect().width + 12;
+    const index = Math.round(cards.scrollLeft / width);
+    if (index !== active) selectCard(index, false);
+  }, 160);
+}, { passive: true });
+function selectCard(index, smooth = true) {
   const target = Math.min(stages.length - 1, Math.max(0, index));
-  const left = stepEls[target].offsetLeft - stepEls[0].offsetLeft;
-  cards.scrollTo({ left, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+  if (!mobileCards.matches) return;
+  const start = journey.getBoundingClientRect().top + scrollY - mobileTop;
+  window.scrollTo({ top: start + (target + .15) * mobileStride, behavior: smooth && !reducedMotion.matches ? 'smooth' : 'instant' });
+  queueScroll();
 }
 document.querySelector('.card-previous').addEventListener('click', () => selectCard(active - 1));
 document.querySelector('.card-next').addEventListener('click', () => selectCard(active + 1));
@@ -101,10 +132,8 @@ stageLinks.forEach((link, i) => link.addEventListener('click', e => {
   e.preventDefault();
   selectCard(i);
 }));
-mobileCards.addEventListener('change', () => {
-  if (mobileCards.matches) selectCard(Math.max(active, 0));
-  queueScroll();
-});
+mobileCards.addEventListener('change', measureJourney);
+measureJourney();
 if (mobileCards.matches && /^#etapa-[1-5]$/.test(location.hash)) {
   selectCard(Number(location.hash.slice(-1)) - 1);
 }
