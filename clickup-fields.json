@@ -1,0 +1,89 @@
+[
+  {
+    "id": "f2cfee42-612f-4752-85dc-460d2950d289",
+    "options": {
+      "Começar a investir no mercado imobiliário": "4e362d53-1da2-4870-9cd3-7cdac2bb39e3",
+      "Aumentar meu patrimônio atual": "6cd04e0f-3175-48d3-b64a-50c7f42f6329",
+      "Construir minha própria casa": "f8584364-66a1-4dee-bb06-f6b573de04ca",
+      "Ainda estou avaliando as possibilidades": "1681d090-03c2-41fd-aff8-f5ed67b94429"
+    }
+  },
+  {
+    "id": "3e18c37c-cc05-4f9b-b538-667605273130",
+    "options": {
+      "Nos próximos 3 meses": "3f92bb5a-6d80-43d4-a4a4-cab9abc85552",
+      "Entre 3 e 6 meses": "86a50052-b0b7-45d9-ac14-e8117af88472",
+      "Entre 6 e 12 meses": "c43b562a-21ae-4f16-8a9d-b8f1f148e325",
+      "Sem prazo definido": "5e8b1002-de90-4e93-b81e-adaa5b335005"
+    }
+  },
+  {
+    "id": "4e685ad7-eda0-4e2a-bf8c-8cadd7e2ff2b",
+    "options": {
+      "CLT": "3495185b-3f54-477b-b170-bab05760aa87",
+      "Funcionário público": "233c2ac1-7d84-4356-a7ed-bdeee55a60b3",
+      "Empresário": "913ec091-d70f-4844-8fce-82b5821fbe41",
+      "Autônomo": "0b7f3a3d-b678-4a34-8f9d-6361619c27d3",
+      "Aposentado": "6d2a0837-e2d1-4f57-8406-a75a6480f137"
+    }
+  },
+  {
+    "id": "cc3f39ad-b88b-4bfc-9c3e-f45e3bb48601",
+    "options": {}
+  },
+  {
+    "id": "1b819ea9-8036-48d0-abdc-35338385c85c",
+    "options": {
+      "Até R$ 5 mil": "701a3e6f-e67f-4bcc-8438-3763a684e496",
+      "R$ 5 mil a R$ 10 mil": "4e680c7a-7303-427c-a061-0eb1bf9ddc69",
+      "R$ 10 mil a R$ 20 mil": "07461767-d25c-48d0-b98f-ce8950c5c19f",
+      "R$ 20 mil a R$ 40 mil": "8414cc74-b939-41cc-a589-fc1e75d8880b",
+      "Acima de R$ 40 mil": "06dbf951-8209-4aa2-b9ed-142661faad61"
+    }
+  },
+  {
+    "id": "ec407151-625f-4669-9188-7a7f53b883bd",
+    "options": {}
+  },
+  {
+    "id": "b802aeaf-3c04-484a-8ba7-78989fb290a5",
+    "options": {}
+  },
+  {
+    "id": "ea0797b5-a131-4301-9e4e-dc362cb49445",
+    "options": {
+      "Sim, com cônjuge": "fe443d82-33dd-44fb-be74-9c92b17df3e9",
+      "Sim, com sócio ou familiar": "68e85c66-6b2c-4fb0-a8ee-2c2196c81e64",
+      "Não, apenas eu": "7afab88d-6f81-4cb0-8627-169bee0b88e0",
+      "Ainda não decidi": "8c4aba85-357d-4534-866e-52465d7ca67c"
+    }
+  },
+  {
+    "id": "6d4c2b23-f216-479d-afbb-d8d1194af49d",
+    "options": {
+      "Já possuo o terreno": "4e8416e7-d36e-4991-a7b6-29eeff7f032c"
+    }
+  },
+  {
+    "id": "c1b94a27-39e3-422b-b8eb-b86720164ad5",
+    "options": {
+      "Até R$ 300 mil": "a85ca26a-f0e0-4432-933a-0cfb70a924dc",
+      "R$ 300 mil a R$ 500 mil": "87b93c49-b97e-40f2-9be7-39c0eb9d6dc5",
+      "R$ 500 mil a R$ 700 mil": "2472a5b8-6a81-4841-96b8-a7091390c4b5",
+      "R$ 700 mil a R$ 1 milhão": "11745780-4134-4d1c-8dba-881d230ace71",
+      "Acima de R$ 1 milhão": "04437ab2-7bf0-4f63-8ac8-2848f81b7203"
+    }
+  },
+  {
+    "id": "f2f8f6f2-78e2-470e-98e0-95736d888e5c",
+    "options": {}
+  },
+  {
+    "id": "55cc3e3b-693b-46dd-8b30-74fc6f74b6f3",
+    "options": {}
+  },
+  {
+    "id": "7d85505f-d300-47a0-aaef-bb8d9c93f67d",
+    "options": {}
+  }
+]

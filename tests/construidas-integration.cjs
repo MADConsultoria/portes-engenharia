@@ -6,7 +6,7 @@ const { EventEmitter } = require('node:events');
 const root = path.resolve(__dirname, '..');
 let handler;
 vm.runInNewContext(fs.readFileSync(path.join(root,'_server.js'),'utf8'),{
-  require: name => name === 'http' ? { createServer(fn){handler=fn;return {listen(){}};} } : require(name),
+  require: name => name === 'http' ? { createServer(fn){handler=fn;return {listen(){}};} } : name === './clickup-lead' ? require('../clickup-lead') : require(name),
   __dirname:root,process:{env:{}},console:{log(){},error(){}},Buffer,URL,AbortSignal,
   fetch(){throw Error('Requisições externas não são permitidas neste teste.');},
 });

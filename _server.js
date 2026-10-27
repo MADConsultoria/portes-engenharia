@@ -2,6 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
+const { buildCustomFields, fieldsMatch } = require('./clickup-lead');
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -179,6 +180,10 @@ async function createClickUpTask(lead, req) {
 
   if (!token || !configuredListId) throw new Error('CLICKUP_NOT_CONFIGURED');
   const listId = await resolveClickUpListId(configuredListId, token, apiBase);
+  const { custom_fields, pending } = buildCustomFields(lead);
+  const description = buildTaskDescription(lead, req) + (pending.length
+    ? '\n\n## Pendências da integração\n' + pending.map(item => `- ${item}`).join('\n') : '');
+  if (pending.length) console.warn('ClickUp mapping pending:', JSON.stringify({ session: lead.tracking?.diagnostic_session_id, pending }));
 
   const response = await fetch(`${apiBase}/list/${encodeURIComponent(listId)}/task`, {
     method: 'POST',
@@ -188,7 +193,8 @@ async function createClickUpTask(lead, req) {
     },
     body: JSON.stringify({
       name: `Lead LP | ${lead.nome}`,
-      markdown_content: buildTaskDescription(lead, req),
+      markdown_content: description,
+      custom_fields,
     }),
     signal: AbortSignal.timeout(12000),
   });
@@ -208,15 +214,26 @@ async function createClickUpTask(lead, req) {
     if (category) error.diagnostic += `_${category}`;
     throw error;
   }
-  // Reading optional tracking metadata must never turn a successful creation into an error/retry.
+  // Once created, verification failures must never invite another creation.
   try {
     const task = await response.json();
     const taskId = String(task.id || '');
     if (/^[a-zA-Z0-9_-]{1,100}$/.test(taskId)) {
-      return { lead_id: taskId, event_id: `clickup_lead_${taskId}` };
+      let verified = fieldsMatch(task, custom_fields);
+      if (!verified) {
+        try {
+          const check = await fetch(`${apiBase}/task/${encodeURIComponent(taskId)}`, {
+            headers: { Authorization: token }, signal: AbortSignal.timeout(12000),
+          });
+          if (check.ok) verified = fieldsMatch(await check.json(), custom_fields);
+        } catch (_) {}
+      }
+      if (!verified) console.error(`ClickUp verification pending for task ${taskId}. Do not recreate.`);
+      return { lead_id: taskId, event_id: `clickup_lead_${taskId}`, verified };
     }
   } catch (_) {}
-  return {};
+  console.error('ClickUp created a task but returned no readable task ID. Do not recreate.');
+  return { verified: false };
 }
 
 async function handleLead(req, res) {
@@ -237,7 +254,7 @@ async function handleLead(req, res) {
     if (!lead) return sendJson(res, 400, { ok: false, error: 'Confira os dados informados.' });
 
     const trackingResult = await createClickUpTask(lead, req);
-    return sendJson(res, 201, { ok: true, ...trackingResult });
+    return sendJson(res, 201, { ok: true, created: true, ...trackingResult });
   } catch (error) {
     if (error.message === 'PAYLOAD_TOO_LARGE') {
       return sendJson(res, 413, { ok: false, error: 'Dados enviados excedem o limite.' });

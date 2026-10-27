@@ -57,6 +57,10 @@ async function run() {
   await owner.submitLead();
   assert.equal(owner.state.done, false);
   assert(owner.state.submitError);
+  context.fetch = async () => ({ ok: true, status: 201, json: async () => ({ ...success, verified: false }) });
+  await owner.submitLead();
+  assert.equal(owner.state.done, true);
+  assert.equal(window.dataLayer.filter(e => e.event === 'lead_created').length, 2);
   window.dataLayer = { push() { throw Error('blocked'); } };
   owner.pick(1, 'synthetic'); assert.equal(owner.state.step, 2);
   delete window.PortesTracking;
@@ -74,12 +78,12 @@ async function run() {
   assert.equal(restricted.PortesTracking.leadData({}).utm_source, 'restricted');
   // Execute backend with all network and server startup replaced, never contacting ClickUp.
   let handler, calls = 0, outbound;
-  let taskResponse = { ok: true, json: async () => ({ id: 'qa_task' }) };
+  let taskResponse = { ok: true, json: async () => ({ id: 'qa_task', custom_fields: outbound.custom_fields }) };
   const backend = vm.createContext({
-    require: name => name === 'http' ? { createServer(fn) { handler = fn; return { listen() {} }; } } : require(name),
+    require: name => name === 'http' ? { createServer(fn) { handler = fn; return { listen() {} }; } } : name === './clickup-lead' ? require('../clickup-lead') : require(name),
     __dirname: root, process: { env: { CLICKUP_API_TOKEN: 'synthetic', CLICKUP_LIST_ID: '123' } },
-    console: { log() {}, error() {} }, Buffer, URL, AbortSignal,
-    fetch: async (_, options) => { calls++; outbound = JSON.parse(options.body); return taskResponse; }
+    console: { log() {}, error() {}, warn() {} }, Buffer, URL, AbortSignal,
+    fetch: async (_, options) => { calls++; if (options.body) outbound = JSON.parse(options.body); return taskResponse; }
   });
   vm.runInContext(read('_server.js'), backend);
   async function request(data) {
@@ -98,6 +102,9 @@ async function run() {
   assert.equal(created.body.event_id, success.event_id);
   assert(outbound.markdown_content.includes('utm_source:** qa'));
   assert(outbound.markdown_content.includes(metadata.diagnostic_session_id));
+  assert(outbound.markdown_content.includes('Pendências da integração'));
+  assert.equal(outbound.name, 'Lead LP | Synthetic Test');
+  assert(outbound.custom_fields.some(field => field.id === 'f2f8f6f2-78e2-470e-98e0-95736d888e5c' && field.value === lead.nome));
   const beforeBot = calls;
   assert.equal((await request({ ...lead, website: 'bot' })).status, 200);
   assert.equal(calls, beforeBot);
@@ -107,6 +114,13 @@ async function run() {
   taskResponse = { ok: true, json: async () => { throw Error('unreadable'); } };
   const noId = await request(lead);
   assert.equal(noId.status, 201); assert.equal(noId.body.lead_id, undefined);
+  assert.equal(noId.body.created, true); assert.equal(noId.body.ok, true);
+  taskResponse = { ok: true, json: async () => ({ id: 'qa_task', custom_fields: [] }) };
+  const beforeVerification = calls;
+  const missingFields = await request(lead);
+  assert.equal(missingFields.status, 201); assert.equal(missingFields.body.verified, false);
+  assert.equal(missingFields.body.ok, true); assert.equal(missingFields.body.lead_id, 'qa_task');
+  assert.equal(calls - beforeVerification, 2); // One POST and one GET, never another creation.
   for (const name of ['index.html', 'analise/index.html']) {
     const html = read(name);
     assert.equal((html.match(/'GTM-TD97LTRC'/g) || []).length, 1);
