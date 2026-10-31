@@ -1,6 +1,9 @@
 import './style.css';
 import './theme.css';
 import { stages, event } from './content.js';
+import { trackConstruase, navigateToSympla, bindInternalTracking } from './tracking.js';
+
+bindInternalTracking();
 
 document.querySelector('#steps').innerHTML = stages.map((s,i) => `
   <article class="step" id="etapa-${i+1}" aria-labelledby="speaker-${i}">
@@ -46,7 +49,7 @@ document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
 const modal = document.querySelector('#signup-dialog');
 document.querySelector('#signup').addEventListener('click', () => {
-  if (event.checkoutUrl) { window.location.assign(event.checkoutUrl); return; }
+  if (event.checkoutUrl) { navigateToSympla(event.checkoutUrl); return; }
   modal.showModal();
 });
 document.querySelectorAll('.close-dialog,.close-dialog-button').forEach(button => button.addEventListener('click', () => modal.close()));
@@ -130,9 +133,10 @@ cards.addEventListener('pointerup', e => {
   cardPointer = undefined;
   if (Math.abs(dx) >= 35 && Math.abs(dx) > Math.abs(dy) * 1.4) selectCard(active + (dx < 0 ? 1 : -1), false);
 });
-function selectCard(index, smooth = true) {
+function selectCard(index, smooth = true, manual = true) {
   const target = Math.min(stages.length - 1, Math.max(0, index));
   if (!mobileCards.matches) return;
+  if (manual && target !== active) trackConstruase('construa_pillar_select', { pillar_id: String(target + 1).padStart(2, '0') });
   const start = journey.getBoundingClientRect().top + scrollY - mobileTop;
   window.scrollTo({ top: start + (target + .15) * mobileStride, behavior: smooth && !reducedMotion.matches ? 'smooth' : 'instant' });
   queueScroll();
@@ -145,14 +149,17 @@ cards.addEventListener('keydown', e => {
   selectCard(e.key === 'Home' ? 0 : e.key === 'End' ? stages.length - 1 : active + (e.key === 'ArrowRight' ? 1 : -1));
 });
 stageLinks.forEach((link, i) => link.addEventListener('click', e => {
-  if (!mobileCards.matches) return;
+  if (!mobileCards.matches) {
+    trackConstruase('construa_pillar_select', { pillar_id: String(i + 1).padStart(2, '0') });
+    return;
+  }
   e.preventDefault();
   selectCard(i);
 }));
 mobileCards.addEventListener('change', measureJourney);
 measureJourney();
 if (mobileCards.matches && /^#etapa-[1-5]$/.test(location.hash)) {
-  selectCard(Number(location.hash.slice(-1)) - 1);
+  selectCard(Number(location.hash.slice(-1)) - 1, true, false);
 }
 
 toggle.addEventListener('click', () => { paused = !paused; syncMotionLabel(); scene?.setPaused(paused); updateScroll(); });

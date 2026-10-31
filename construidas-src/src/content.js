@@ -1,4 +1,4 @@
-export const event = { checkoutUrl: '' };
+export const event = { checkoutUrl: 'https://www.sympla.com.br/evento/construa-se-construidas-para-construir/3631386' };
 
 export const stages = [
   { number: '01', label: 'O terreno', name: 'Lúcia Braga', title: 'A sua história<br>já tem <em>valor.</em>', theme: 'Recomeçar a partir da própria história.', description: 'Toda construção começa pelo que já existe. Suas experiências, suas escolhas e tudo o que você viveu são o ponto de partida para o próximo capítulo.', metaphor: 'O ponto de partida: reconhecer o valor do que você já carrega.', mark: 'LB', photo: 'lucia-braga.webp', photoWidth: 900, photoHeight: 1350 },

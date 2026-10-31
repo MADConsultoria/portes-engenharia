@@ -5,7 +5,7 @@ const vm = require('node:vm');
 const source = fs.readFileSync(process.argv[2] || path.join(__dirname, '../construidas-src/src/main.js'), 'utf8').replace(/^import .*;\r?\n/gm, '');
 function setup() {
   let y = 0;
-  const frames = [], timers = [], commands = [], nodes = new Map();
+  const frames = [], timers = [], commands = [], tracking = [], nodes = new Map();
   const node = key => {
     if (nodes.has(key)) return nodes.get(key);
     const events = new Map(), properties = new Map();
@@ -26,6 +26,7 @@ function setup() {
   const selectors={'#steps':cards,'.journey':journey};
   const globalEvents=new Map();
   const context={
+    trackConstruase(name, payload){tracking.push({name, ...payload});}, navigateToSympla(){}, bindInternalTracking(){},
     stages:Array.from({length:5},(_,i)=>({number:String(i+1),label:'stage-'+i,title:'Título'})), event:{checkoutUrl:''},
     innerWidth:390,innerHeight:844,location:{hash:''},console,
     document:{querySelector:k=>selectors[k]||node(k),querySelectorAll:k=>k==='.step'?steps:k==='.stage-nav a'?links:[],createElement:()=>node('created-'+created++),documentElement:{classList:{add(){},remove(){}}}},
@@ -39,7 +40,7 @@ function setup() {
   context.window={scrollTo:args=>{commands.push(args);y=args.top;(globalEvents.get('scroll')||[]).forEach(fn=>fn());}};
   const flush=()=>{let count=0;while(frames.length){assert(++count<50,'Unexpected rendering loop');frames.shift()();}};
   vm.runInNewContext(source,context);flush();
-  return {node,cards,commands,context,reduced,links,
+  return {node,cards,commands,tracking,context,reduced,links,
     flush,
     move:target=>{y=target;(globalEvents.get('scroll')||[]).forEach(fn=>fn());flush();},
     resize:height=>{context.innerHeight=height;(globalEvents.get('resize')||[]).forEach(fn=>fn());flush();},
@@ -58,6 +59,7 @@ for(const index of [0,1,2,3,4,3,2,1,0,4]) {
 }
 app.move(start+stride*5+900);app.cards.emit('scroll');app.idle();
 assert.equal(app.commands.length,0,'Leaving the section must not trigger navigation');
+assert.equal(app.tracking.length,0,'Automatic scroll must not emit tracking');
 app.move(start+stride*2.1);
 app.resize(780); // Safari address bar opening/closing must not change the stage.
 assert.equal(app.node('.cards-status').textContent,'3 de 5');
@@ -68,9 +70,16 @@ app.cards.emit('pointerdown',{isPrimary:true,pointerType:'touch',pointerId:2,cli
 app.cards.emit('pointerup',{pointerId:2,clientX:70,clientY:306});app.flush();
 assert.equal(app.commands.length,1,'Horizontal gestures must advance exactly once');
 assert.equal(app.node('.cards-status').textContent,'4 de 5');
+assert.equal(app.tracking.length,1);
+assert.equal(app.tracking[0].pillar_id,'04');
 app.cards.emit('scroll');app.idle();assert.equal(app.commands.length,1);
 app.reduced.matches=true;
 app.node('.card-next').emit('click');app.flush();
 assert.equal(app.commands.at(-1).behavior,'instant');
 assert.equal(app.node('.cards-status').textContent,'5 de 5');
+assert.equal(app.tracking.at(-1).pillar_id,'05');
+app.cards.emit('keydown',{key:'Home',preventDefault(){}});app.flush();
+assert.equal(app.tracking.at(-1).pillar_id,'01');
+for(let i=0;i<5;i++) { app.links[i].emit('click',{preventDefault(){}});app.flush(); }
+assert.deepEqual(app.tracking.slice(-4).map(e=>e.pillar_id),['02','03','04','05']);
 console.log('PASS: vertical progress and reverse, stable exit, Safari toolbar resize, distinct gestures and reduced motion.');
