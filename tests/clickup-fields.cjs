@@ -11,7 +11,7 @@ const questions = context.questions;
 const lead = { nome: 'Teste', email: 'teste@example.invalid', fone: '11964040944', answers: questions.map(q => q.type === 'age' ? '53 anos' : q.o[0]) };
 const get = (result, index) => result.custom_fields.find(f => f.id === fields[index].id)?.value;
 let result = buildCustomFields(lead);
-assert.equal(result.custom_fields.length, 14);
+assert.equal(result.custom_fields.length, 15);
 assert.equal(result.pending.length, 0);
 assert.equal(get(result, 6), 53);
 assert.equal(get(result, 3), questions[3].o[0]);
@@ -46,3 +46,12 @@ assert(!fieldsMatch({ custom_fields: [] }, result.custom_fields));
 const expected = [{ id: fields[0].id, value: fields[0].options[questions[0].o[0]] }];
 assert(fieldsMatch({ custom_fields: [{ id: fields[0].id, type: 'drop_down', value: 0, type_config: { options: [{ id: expected[0].value, orderindex: 0 }] } }] }, expected));
 console.log('PASS: every mapped option, partial mappings, inconsistencies, age, phone normalization and saved-field verification.');
+
+const origin = tracking => buildCustomFields({ ...lead, tracking }).custom_fields.find(f => f.id === '98f9c9ed-42d4-4968-8e76-da70a4268d8f')?.value;
+for (const tracking of [undefined, {}, { fbclid: '  ' }, { utm_source: 'google', utm_medium: 'cpc' }, { utm_campaign: 'meta' }]) {
+  assert.equal(origin(tracking), '6d386e98-2c20-4c38-9591-1ad6668a7c41');
+}
+for (const tracking of [{ fbclid: 'click-id' }, { fbclid: 'click-id', utm_source: 'google' }, ...['meta', 'facebook', 'instagram', 'fb', 'ig', ' Facebook ', 'META', 'l.facebook.com'].map(utm_source => ({ utm_source }))]) {
+  assert.equal(origin(tracking), '4429159c-109c-4454-a304-dfd8e1b79a9b');
+}
+console.log('PASS: ClickUp origin classification for Meta identifiers and default organic.');

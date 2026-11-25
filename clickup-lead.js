@@ -50,6 +50,20 @@ function buildCustomFields(lead) {
   const phone = normalizePhone(lead.fone);
   if (phone) add(12, phone);
   else pending.push('WhatsApp: número sem formato válido; campo de telefone omitido.');
+  if (['Já possuo o terreno', 'Estou negociando um terreno'].includes(answer(8))) {
+    for (const [key, id] of [['area', 'a213970f-9366-4395-b4d9-973fb4f253a4'], ['value', '5059bcf0-8396-4565-915a-d4b6587c80d4']]) {
+      const value = lead.land?.[key];
+      if (typeof value === 'number' && Number.isFinite(value) && value > 0) custom_fields.push({ id, value });
+    }
+  }
+  const tracking = lead.tracking || {};
+  const source = String(tracking.utm_source || '').trim().toLowerCase();
+  const isMeta = Boolean(String(tracking.fbclid || '').trim()) ||
+    ['meta', 'facebook', 'instagram', 'fb', 'ig', 'facebook.com', 'instagram.com', 'l.facebook.com', 'm.facebook.com'].includes(source);
+  custom_fields.push({
+    id: '98f9c9ed-42d4-4968-8e76-da70a4268d8f',
+    value: isMeta ? '4429159c-109c-4454-a304-dfd8e1b79a9b' : '6d386e98-2c20-4c38-9591-1ad6668a7c41',
+  });
   return { custom_fields, pending };
 }
 

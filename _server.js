@@ -104,7 +104,16 @@ function validateLead(data) {
     if (key === 'diagnostic_session_id' && !/^[a-zA-Z0-9_-]{1,100}$/.test(value)) continue;
     if (value) tracking[key] = value;
   }
-  return { nome, email, fone, answers, tracking };
+  const land = {};
+  if (['Já possuo o terreno', 'Estou negociando um terreno'].includes(answers[8])) {
+    for (const key of ['area', 'value']) {
+      const value = data.land?.[key];
+      if (value === undefined) continue;
+      if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) return null;
+      land[key] = value;
+    }
+  }
+  return { nome, email, fone, answers, tracking, land };
 }
 
 function buildTaskDescription(lead, req) {
